@@ -69,6 +69,9 @@ btnViewCode = tk.Button(frame_buttons, text="View Algorithm-Code", font=("Arial"
 btnViewCode.pack(side="left", padx=5)
 
 def RunCode_window():
+    # Ẩn cửa sổ chính
+    root.withdraw()
+
     # Tạo cửa sổ con
     new_win = tk.Toplevel(root)
     new_win.title("Run Code")
@@ -78,10 +81,20 @@ def RunCode_window():
     lbl = tk.Label(new_win, text="Đây là cửa sổ mới", font=("Arial", 14))
     lbl.pack(pady=20)
 
-    btn_close = tk.Button(new_win, text="Đóng", command=new_win.destroy)
+    def close_window():
+        new_win.destroy()
+        root.deiconify()  # Hiện lại cửa sổ chính
+
+    btn_close = tk.Button(new_win, text="Đóng", command=close_window)
     btn_close.pack()
 
+    # Khi bấm nút đóng (X) ở góc phải
+    new_win.protocol("WM_DELETE_WINDOW", close_window)
+
 def ViewCode_window():
+    # Ẩn cửa sổ chính
+    root.withdraw()
+
     # Tạo cửa sổ con
     new_win = tk.Toplevel(root)
     new_win.title("View Code")
@@ -91,8 +104,15 @@ def ViewCode_window():
     lbl = tk.Label(new_win, text="Đây là cửa sổ mới", font=("Arial", 14))
     lbl.pack(pady=20)
 
-    btn_close = tk.Button(new_win, text="Đóng", command=new_win.destroy)
+    def close_window():
+        new_win.destroy()
+        root.deiconify()  # Hiện lại cửa sổ chính
+
+    btn_close = tk.Button(new_win, text="Đóng", command=close_window)
     btn_close.pack()
+
+    # Khi bấm nút đóng (X) ở góc phải
+    new_win.protocol("WM_DELETE_WINDOW", close_window)
 
 
 # ----- RIGHT PANE (Log) -----
