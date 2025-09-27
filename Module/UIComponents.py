@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from Module.GraphVisualizer import GraphApp
 from Module.RunCodeWindow import RunCode_window
 from Module.ViewCodeWindow import ViewCode_window
 
@@ -108,20 +109,39 @@ def create_middle_pane(root, parent, algorithm_var):
     ctk.CTkLabel(input_frame, text="Goal Node:", font=("Segoe UI", 18)).grid(row=1, column=0, padx=5, pady=5, sticky="w")
     TxtboxGoalNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
     TxtboxGoalNode.grid(row=1, column=1, padx=5, pady=5)
-
-    def ClearBox():
-        TxtboxStartNode.delete(0,"end")
-        TxtboxGoalNode.delete(0, "end")
-
-    btnCLear= ctk.CTkButton(input_frame, text="Clear", font=("Segoe UI", 14), command= ClearBox).grid(row=1, column=2, padx=5, pady=5, sticky="w")
-
-
+    
     # Graph Preview
     graph_frame = ctk.CTkFrame(frame, height=400, corner_radius=10, fg_color="#DDDDDD")
     graph_frame.pack(padx=10, pady=20, fill="both", expand=True)
 
-    graph_label = ctk.CTkLabel(graph_frame, text_color="gray")
-    graph_label.place(relx=0.5, rely=0.5, anchor="center")
+    graph = GraphApp(graph_frame)
+    def update_node_colors(event=None):
+        start_id, goal_id = None, None
+        try:
+            start_val = TxtboxStartNode.get()
+            if start_val:
+                start_id = int(start_val)
+        except ValueError:
+            start_id = None  # Bỏ qua nếu nhập không phải là số
+
+        try:
+            goal_val = TxtboxGoalNode.get()
+            if goal_val:
+                goal_id = int(goal_val)
+        except ValueError:
+            goal_id = None # Bỏ qua nếu nhập không phải là số
+            
+        graph.highlight_nodes(start_id=start_id, goal_id=goal_id)
+
+    TxtboxStartNode.bind("<KeyRelease>", update_node_colors)
+    TxtboxGoalNode.bind("<KeyRelease>", update_node_colors)
+
+    def ClearBox():
+        TxtboxStartNode.delete(0, "end")
+        TxtboxGoalNode.delete(0, "end")
+        update_node_colors()
+
+    btnCLear = ctk.CTkButton(input_frame, text="Clear", font=("Segoe UI", 14), command=ClearBox).grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
     # Buttons
     btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
