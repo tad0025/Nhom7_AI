@@ -30,3 +30,30 @@ def RunCode_window(root):
 
     btn_close = ctk.CTkButton(new_win, text="Close", command=close_window)
     btn_close.pack(side="right",pady=10)
+
+    # ====== CĂN GIỮA CỬA SỔ ======
+    new_win.update_idletasks() # Đảm bảo các thành phần giao diện đã sẵn sàng
+
+    # Kích thước cửa sổ mong muốn
+    width = 1220; height = 700
+
+    # Tạm thời phóng to cửa sổ để lấy thông tin về khu vực làm việc
+    new_win.state('zoomed')
+    new_win.update_idletasks()
+
+    # Lấy tọa độ và kích thước của khu vực làm việc (là cửa sổ khi đang maximized)
+    work_area_width = new_win.winfo_width()
+    work_area_height = new_win.winfo_height()
+    work_area_x_offset = new_win.winfo_x()
+    work_area_y_offset = new_win.winfo_y()
+
+    # Đưa cửa sổ về lại trạng thái bình thường
+    new_win.state('normal')
+    new_win.update_idletasks()
+
+    # Tính toán tọa độ (x, y) để cửa sổ nằm chính giữa khu vực làm việc
+    x = work_area_x_offset + (work_area_width // 2) - (width // 2)
+    y = work_area_y_offset + (work_area_height // 2) - (height // 2)
+
+    # Đặt kích thước và vị trí cuối cùng cho cửa sổ
+    new_win.geometry(f"{width}x{height}+{x}+{y}")
