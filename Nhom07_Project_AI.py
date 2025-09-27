@@ -1,3 +1,12 @@
+import sys, subprocess
+
+required = ["customtkinter"]
+for package in required:
+    try:
+        __import__(package)
+    except ImportError:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
 import customtkinter as ctk
 from Module.CenterWindow import center_window
 from Module.UIComponents import create_left_pane, create_middle_pane, create_right_pane
