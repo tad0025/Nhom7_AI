@@ -1,5 +1,5 @@
 import tkinter as tk
-from UIComponents import create_left_pane, create_middle_pane, create_right_pane
+from Module.UIComponents import create_left_pane, create_middle_pane, create_right_pane
 
 def main():
     root = tk.Tk()
