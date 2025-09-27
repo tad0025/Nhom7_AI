@@ -59,7 +59,11 @@ def create_left_pane(root, parent):
     combo4.pack(pady=5, padx=10)
     combo4.set("Problem Decomposition Search")
 
-def create_middle_pane(root, parent):
+    return combo1, combo2, combo3, combo4
+
+def create_middle_pane(root, parent, combos):
+    combo1, combo2, combo3, combo4 = combos
+
     frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
     frame.configure(fg_color="white")

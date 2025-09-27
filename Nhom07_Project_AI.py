@@ -21,8 +21,8 @@ def main():
 
     # ====== TẠO CÁC KHUNG CHÍNH ======
     # Truyền `root` làm đối số `parent`
-    create_left_pane(root, root)
-    create_middle_pane(root, root)
+    combos = create_left_pane(root, root)
+    create_middle_pane(root, root, combos)
     create_right_pane(root, root)
 
     # ====== CĂN GIỮA CỬA SỔ ======
