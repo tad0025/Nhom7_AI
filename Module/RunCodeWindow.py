@@ -25,6 +25,8 @@ def RunCode_window(root):
     graphRun_label = ctk.CTkLabel(graphRun_frame, text_color="gray")
     graphRun_label.place(relx=0.5, rely=0.5, anchor="center")
 
+    GraphApp(graphRun_frame)
+
     def close_window():
         new_win.destroy()
         root.deiconify()
