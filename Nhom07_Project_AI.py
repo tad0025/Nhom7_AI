@@ -1,142 +1,217 @@
-import tkinter as tk
-from gc import enable
+import customtkinter as ctk
+from prompt_toolkit.eventloop import new_eventloop_with_inputhook
 
-from tkinter import ttk
-
-from stack_data.utils import frame_and_lineno
-from win32comext.adsi.adsicon import ADS_RIGHT_GENERIC_ALL
+# ====== APP CONFIG ======
+ctk.set_appearance_mode("light")   # có thể đổi: "light" / "dark" / "system"
+ctk.set_default_color_theme("blue")  # theme có sẵn: "blue", "green", "dark-blue"
 
 # ====== MAIN WINDOW ======
-root = tk.Tk()
+root = ctk.CTk()
 root.title("Graph Search Algorithm Visualizer")
 root.geometry("1220x880")
+root.configure(fg_color="#9999FF")
 
-# ====== LAYOUT SETUP ======
-root.grid_rowconfigure(0, weight= 1)
+# ====== GRID SETUP ======
+root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=0, minsize=200)
 root.grid_columnconfigure(1, weight=3)  # frame_mid rộng hơn
 root.grid_columnconfigure(2, weight=1, minsize=300)
 
 # ----- LEFT PANE (Thuật toán) -----
-frame_left = tk.Frame(root, bd=2, relief= "groove")
-frame_left.grid(row= 0, column=0, sticky="nswe")
-frame_left.grid_propagate(False)
+frame_left = ctk.CTkFrame(root, corner_radius=15)
+frame_left.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+
+frame_left.configure(fg_color="white")
+
+label_algo = ctk.CTkLabel(frame_left, text="CÁC THUẬT TOÁN", font=("Segoe UI", 20, "bold"))
+label_algo.pack(pady=10)
 
 
-label_algo = tk.Label(frame_left, text="CÁC THUẬT TOÁN", font=("Arial", 14, "bold"))
-label_algo.grid(row=0, column=0, columnspan=2,pady=5)
+combo1 = ctk.CTkComboBox(
+    frame_left,
+    values = ["BFS", "DFS", "DLS", "IDS"],
+    width=250,  # chiều rộng
+    height=30,  # chiều cao
+    font=("Segoe UI", 14),  # font chữ
+    dropdown_font=("Segoe UI", 13),  # font trong danh sách xổ xuống
+    state="readonly"
+)
+combo1.pack(pady=5, padx=10)
+combo1.set("Uninformed Search Algorithm")
 
-algos = ["BFS", "DFS", "UCS", "DLS", "IDS",
-         "Greedy Search", "A* Search",
-         "Hill Climbing Search", "Beam Search"]
 
-for i, algo in enumerate(algos, start=1):
-    ttk.Button(frame_left, text=algo).grid(row=i, column=0, padx=6, pady=6, sticky="ew")
+
+
+combo2 = ctk.CTkComboBox(
+    frame_left,
+    values = ["UCS", "Greedy", "A*"],
+    width = 250,  # chiều rộng
+    height = 30,  # chiều cao
+    font = ("Segoe UI", 14),  # font chữ
+    dropdown_font = ("Segoe UI", 13),  # font trong danh sách xổ xuống
+    state = "readonly"
+)
+combo2.pack(pady=5, padx=10)
+combo2.set("Informed Search Algorithm")
+
+combo3 = ctk.CTkComboBox(
+    frame_left,
+    values = ["Hill Climbing", "Simulated Annealing", "Beam Search", "Genetic"],
+    width=250,  # chiều rộng
+    height=30,  # chiều cao
+    font=("Segoe UI", 14),  # font chữ
+    dropdown_font=("Segoe UI", 13),  # font trong danh sách xổ xuống
+    state="readonly"
+)
+combo3.pack(pady=5, padx=10)
+combo3.set("Local Search Algorithm")
+
+combo4 = ctk.CTkComboBox(
+    frame_left,
+    values = ["And-OR Search"],
+    width=250,  # chiều rộng
+    height=30,  # chiều cao
+    font=("Segoe UI", 14),  # font chữ
+    dropdown_font=("Segoe UI", 13),  # font trong danh sách xổ xuống
+    state="readonly"
+)
+combo4.pack(pady=5, padx=10)
+combo4.set("Problem Decomposition Search")
 
 
 # ----- MIDDLE PANE (Chính) -----
-frame_mid = tk.Frame(root, bd=2, relief="groove")
-frame_mid.grid(row=0, column=1, sticky="nsew")
-
-frame_mid.grid_columnconfigure(0, weight=0)
-frame_mid.grid_columnconfigure(1, weight=1)
-
-frame_graph = tk.Frame(frame_mid, bd=2, relief="sunken", bg="white")
-frame_graph.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
+frame_mid = ctk.CTkFrame(root, corner_radius=15)
+frame_mid.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+frame_mid.configure(fg_color="white")
 
 
+label_name = ctk.CTkLabel(frame_mid, text="TÊN THUẬT TOÁN", font=("Segoe UI", 20, "bold"))
+label_name.pack(pady=10)
 
-label_name = tk.Label(frame_mid,text="Tên thuật toán", font=("Arial", 14, "bold"))
-label_name.grid(row =0, column=0, columnspan=2, padx=10, pady= 10)
+label_name.configure(text_color="black")
 
 
-labelStartNode = tk.Label(frame_mid, text="Start Node:", font=("Arial",20))
-labelStartNode.grid(row= 2, column=0, padx=6, pady=6, sticky="w")
-TxtboxStartNode = tk.Entry(frame_mid, font=("Arial", 12), width= 25)
-TxtboxStartNode.grid(row=2, column=1, padx=6, pady=6, sticky="w")
-labelGoalNode = tk.Label(frame_mid, text="Goal Node:", font=("Arial",20))
-labelGoalNode.grid(row= 3, column=0, padx=6, pady=6, sticky="w")
-TxtboxGoalNode = tk.Entry(frame_mid, font=("Arial", 12), width= 25)
-TxtboxGoalNode.grid(row=3, column=1, padx=6, pady=6, sticky="w")
+# Input Section
+input_frame = ctk.CTkFrame(frame_mid, corner_radius=10)
+input_frame.pack(pady=10, padx=10, fill="x")
 
-frame_buttons = tk.Frame(frame_mid)
-frame_buttons.grid(row=4, column=0, columnspan=2, pady=10, sticky="w")
+ctk.CTkLabel(input_frame, text="Start Node:", font=("Segoe UI", 18)).grid(row=0, column=0, padx=5, pady=5, sticky="w")
+TxtboxStartNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
+TxtboxStartNode.grid(row=0, column=1, padx=5, pady=5)
 
-btnRun = tk.Button(frame_buttons, text="Run Algorithm", font=("Arial", 12), width=20, command=lambda: RunCode_window())
-btnRun.pack(side="left", padx=5)
+ctk.CTkLabel(input_frame, text="Goal Node:", font=("Segoe UI", 18)).grid(row=1, column=0, padx=5, pady=5, sticky="w")
+TxtboxGoalNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
+TxtboxGoalNode.grid(row=1, column=1, padx=5, pady=5)
 
-btnViewCode = tk.Button(frame_buttons, text="View Algorithm-Code", font=("Arial", 12), width=20, command=lambda: ViewCode_window())
-btnViewCode.pack(side="left", padx=5)
+def ClearBox():
+    TxtboxStartNode.delete(0,"end")
+    TxtboxGoalNode.delete(0, "end")
 
-def RunCode_window():
-    # Ẩn cửa sổ chính
+btnCLear= ctk.CTkButton(input_frame, text="Clear", font=("Segoe UI", 14), command= ClearBox).grid(row=1, column=2, padx=5, pady=5, sticky="w")
+
+
+# Graph Preview
+graph_frame = ctk.CTkFrame(frame_mid, height=400, corner_radius=10, fg_color="#DDDDDD")
+graph_frame.pack(padx=10, pady=20, fill="both", expand=True)
+
+graph_label = ctk.CTkLabel(graph_frame, text_color="gray")
+graph_label.place(relx=0.5, rely=0.5, anchor="center")
+
+#Run Code
+def RunCode_Window():
+    #Ẩn window chính
     root.withdraw()
 
-    # Tạo cửa sổ con
-    new_win = tk.Toplevel(root)
+    new_win= ctk.CTkToplevel(root)
     new_win.title("Run Code")
     new_win.geometry("1200x900")
 
-    # Nội dung trong cửa sổ con
-    lbl = tk.Label(new_win, text="Đây là cửa sổ mới", font=("Arial", 14))
+    #Giữ theme
+    ctk.set_default_color_theme("blue")
+    new_win.configure(fg_color="#9999FF")
+
+    #Nội dụng
+    lbl= ctk.CTkLabel(new_win, text="Đây là cửa sổ Run Code", font=ctk.CTkFont("Arial", size=18, weight="bold"))
     lbl.pack(pady=20)
+
+    #Graph cho chạy code
+    graphRun_frame = ctk.CTkFrame(new_win, height=400, width=30, corner_radius=10, fg_color="white")
+    graphRun_frame.pack(padx=10, pady=20, fill="both", expand=True)
+
+    graphRun_label = ctk.CTkLabel(graphRun_frame, text_color="gray")
+    graphRun_label.place(relx=0.5, rely=0.5, anchor="center")
 
     def close_window():
         new_win.destroy()
-        root.deiconify()  # Hiện lại cửa sổ chính
+        root.deiconify()
 
-    btn_close = tk.Button(new_win, text="Đóng", command=close_window)
-    btn_close.pack()
+    btn_close = ctk.CTkButton(new_win, text="Close", command=close_window)
+    btn_close.pack(side="right",pady=10)
 
-    # Khi bấm nút đóng (X) ở góc phải
-    new_win.protocol("WM_DELETE_WINDOW", close_window)
 
+
+
+
+
+#View Code
 def ViewCode_window():
-    # Ẩn cửa sổ chính
+    # Ẩn window chính
     root.withdraw()
-
-    # Tạo cửa sổ con
-    new_win = tk.Toplevel(root)
+    # Tạo cửa sổ con với CTkToplevel
+    new_win = ctk.CTkToplevel(root)
     new_win.title("View Code")
     new_win.geometry("1200x900")
 
+    # Giữ theme đồng bộ với root
+    new_win.configure(fg_color="#9999FF")
+    ctk.set_default_color_theme("blue")   # "blue" / "green" / "dark-blue"
+
     # Nội dung trong cửa sổ con
-    lbl = tk.Label(new_win, text="Đây là cửa sổ mới", font=("Arial", 14))
+    lbl = ctk.CTkLabel(new_win, text="Đây là cửa sổ View Code",
+                       font=ctk.CTkFont("Arial", size=18, weight="bold"))
     lbl.pack(pady=20)
+
+    # Textbox hiển thị code (cho sinh động hơn)
+    txt_code = ctk.CTkTextbox(new_win, width=1100, height=700, font=("Consolas", 13))
+    txt_code.pack(pady=10, padx=10)
+    txt_code.insert("1.0", "# Đây là code giả lập hiển thị trong window\nprint('Hello World')")
+    txt_code.configure(state="disabled")
 
     def close_window():
         new_win.destroy()
-        root.deiconify()  # Hiện lại cửa sổ chính
+        root.deiconify()
 
-    btn_close = tk.Button(new_win, text="Đóng", command=close_window)
-    btn_close.pack()
+    btn_close = ctk.CTkButton(new_win, text="Close", command=close_window)
+    btn_close.pack(side="right",pady=10)
 
-    # Khi bấm nút đóng (X) ở góc phải
-    new_win.protocol("WM_DELETE_WINDOW", close_window)
+
+
+# Buttons
+btn_frame = ctk.CTkFrame(frame_mid, fg_color="transparent")
+btn_frame.pack(pady=10)
+
+btnRun = ctk.CTkButton(btn_frame, text="Run Algorithm", width=160, fg_color="#4A90E2", hover_color="#357ABD", command=RunCode_Window)
+btnRun.pack(side="left", padx=10)
+
+btnViewCode = ctk.CTkButton(btn_frame, text="View Code", width=160, fg_color="#50C878", hover_color="#3FA463", command=ViewCode_window)
+btnViewCode.pack(side="left", padx=10)
 
 
 # ----- RIGHT PANE (Log) -----
-frame_right = tk.Frame(root, bd=2, relief="groove")
-frame_right.grid(row=0, column=2, sticky="nswe")
+frame_right = ctk.CTkFrame(root, corner_radius=15)
+frame_right.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
+frame_right.configure(fg_color="white")
 
-LblLogHistory = tk.Label(frame_right, text="Log History", font=("Arial", 14, "bold"))
-LblLogHistory.grid(row=1, column=0, columnspan=2, pady=5)
-txtboxtHistory = tk.Text(frame_right, font=("Arial", 12), width= 40, height= 20)
-txtboxtHistory.grid(row=2, column=0, columnspan=2, padx= 5, pady=5, sticky="nsew")
-txtboxtHistory.insert("1.0", "Kết quả thuật toán...\nNode path: A → B → C")
-txtboxtHistory.config(state="disabled")
+LblLogHistory = ctk.CTkLabel(frame_right, text="LOG HISTORY", font=("Segoe UI", 20, "bold"))
+LblLogHistory.pack(pady=10)
 
+txtboxtHistory = ctk.CTkTextbox(frame_right, width=250, height=500, font=("Consolas", 12),fg_color="#DDDDDD")
+txtboxtHistory.pack(padx=10, pady=10, fill="both", expand=True)
+txtboxtHistory.insert("0.0", "Kết quả thuật toán...\nNode path: A → B → C")
+txtboxtHistory.configure(state="disabled")
 
+btnCloseApp = ctk.CTkButton(frame_right, text="Close App", width=160, fg_color="#FF6347", hover_color="#E05A44", command=root.quit)
+btnCloseApp.pack( padx=10)
 
-
-
-
-
-
-# căn giữa
-root.update_idletasks()
-width, height = root.winfo_width(), root.winfo_height()
-sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-x, y = (sw // 2) - (width // 2), (sh // 2) - (height // 2)
-root.geometry(f"{width}x{height}+{x}+{y}")
+# ====== START APP ======
 root.mainloop()
