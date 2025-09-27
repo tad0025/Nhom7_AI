@@ -20,9 +20,9 @@ def main():
     root.grid_columnconfigure(2, weight=1, minsize=300)
 
     # ====== TẠO CÁC KHUNG CHÍNH ======
-    # Truyền `root` làm đối số `parent`
-    combos = create_left_pane(root, root)
-    create_middle_pane(root, root, combos)
+    selected_algorithm_var = ctk.StringVar(value="TÊN THUẬT TOÁN")
+    create_left_pane(root, root, selected_algorithm_var)
+    create_middle_pane(root, root, selected_algorithm_var)
     create_right_pane(root, root)
 
     # ====== CĂN GIỮA CỬA SỔ ======

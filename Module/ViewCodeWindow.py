@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from Module.CenterWindow import center_window
 
-def ViewCode_window(root):
+def ViewCode_window(root, algorithm):
     # Ẩn window chính
     root.withdraw()
     # Tạo cửa sổ con với CTkToplevel
@@ -14,14 +14,13 @@ def ViewCode_window(root):
     ctk.set_default_color_theme("blue")   # "blue" / "green" / "dark-blue"
 
     # Nội dung trong cửa sổ con
-    lbl = ctk.CTkLabel(new_win, text="Đây là cửa sổ View Code",
-                       font=ctk.CTkFont("Arial", size=18, weight="bold"))
-    lbl.pack(pady=20)
+    lbl = ctk.CTkLabel(new_win, text=algorithm, font=ctk.CTkFont("Arial", size=20, weight="bold"))
+    lbl.pack(pady=10)
 
-    # Textbox hiển thị code (cho sinh động hơn)
-    txt_code = ctk.CTkTextbox(new_win, width=1100, height=700, font=("Consolas", 13))
-    txt_code.pack(pady=10, padx=10)
-    txt_code.insert("1.0", "# Đây là code giả lập hiển thị trong window\nprint('Hello World')")
+    # Textbox hiển thị code
+    txt_code = ctk.CTkTextbox(new_win, font=("Consolas", 13))
+    txt_code.pack(pady=10, padx=30, expand=True, fill="both")
+    txt_code.insert("1.0", algorithm)
     txt_code.configure(state="disabled")
 
     def close_window():
@@ -29,9 +28,9 @@ def ViewCode_window(root):
         root.deiconify()
 
     btn_close = ctk.CTkButton(new_win, text="Close", command=close_window)
-    btn_close.pack(side="right",pady=10)
+    btn_close.pack(pady=10)
 
-    new_win.protocol("WM_DELETE_WINDOW", close_window)
+    new_win.protocol("WM_DELETE_WINDOW", root.quit)
 
     # ====== CĂN GIỮA CỬA SỔ ======
     center_window(new_win)

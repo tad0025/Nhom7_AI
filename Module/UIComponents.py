@@ -1,8 +1,9 @@
 import customtkinter as ctk
+from tkinter import messagebox
 from Module.RunCodeWindow import RunCode_window
 from Module.ViewCodeWindow import ViewCode_window
 
-def create_left_pane(root, parent):
+def create_left_pane(root, parent, algorithm_var):
     frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
 
@@ -10,6 +11,13 @@ def create_left_pane(root, parent):
 
     label_algo = ctk.CTkLabel(frame, text="CÁC THUẬT TOÁN", font=("Segoe UI", 20, "bold"))
     label_algo.pack(pady=10)
+
+    default_texts = {
+        "Uninformed": "Uninformed Search Algorithm",
+        "Informed": "Informed Search Algorithm",
+        "Local": "Local Search Algorithm",
+        "Decomposition": "Problem Decomposition Search"
+    }
 
     combo1 = ctk.CTkComboBox(
         frame,
@@ -21,7 +29,7 @@ def create_left_pane(root, parent):
         state="readonly"
     )
     combo1.pack(pady=5, padx=10)
-    combo1.set("Uninformed Search Algorithm")
+    combo1.set(default_texts["Uninformed"])
 
     combo2 = ctk.CTkComboBox(
         frame,
@@ -33,7 +41,7 @@ def create_left_pane(root, parent):
         state = "readonly"
     )
     combo2.pack(pady=5, padx=10)
-    combo2.set("Informed Search Algorithm")
+    combo2.set(default_texts["Informed"])
 
     combo3 = ctk.CTkComboBox(
         frame,
@@ -45,7 +53,7 @@ def create_left_pane(root, parent):
         state="readonly"
     )
     combo3.pack(pady=5, padx=10)
-    combo3.set("Local Search Algorithm")
+    combo3.set(default_texts["Local"])
 
     combo4 = ctk.CTkComboBox(
         frame,
@@ -57,18 +65,34 @@ def create_left_pane(root, parent):
         state="readonly"
     )
     combo4.pack(pady=5, padx=10)
-    combo4.set("Problem Decomposition Search")
+    combo4.set(default_texts["Decomposition"])
 
-    return combo1, combo2, combo3, combo4
+    # Định nghĩa hàm xử lý sự kiện
+    all_combos = [combo1, combo2, combo3, combo4]
+    def handle_selection(selected_combo):
+        algorithm_var.set(selected_combo.get())
+        defaults = [
+            default_texts["Uninformed"],
+            default_texts["Informed"],
+            default_texts["Local"],
+            default_texts["Decomposition"]
+        ]
+        for i, combo in enumerate(all_combos):
+            # if combo != selected_combo:
+            combo.set(defaults[i])
 
-def create_middle_pane(root, parent, combos):
-    combo1, combo2, combo3, combo4 = combos
+    # Gán sự kiện 'command' cho mỗi combobox
+    combo1.configure(command=lambda choice: handle_selection(combo1))
+    combo2.configure(command=lambda choice: handle_selection(combo2))
+    combo3.configure(command=lambda choice: handle_selection(combo3))
+    combo4.configure(command=lambda choice: handle_selection(combo4))
 
+def create_middle_pane(root, parent, algorithm_var):
     frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
     frame.configure(fg_color="white")
 
-    label_name = ctk.CTkLabel(frame, text="TÊN THUẬT TOÁN", font=("Segoe UI", 20, "bold"))
+    label_name = ctk.CTkLabel(frame, textvariable=algorithm_var, font=("Segoe UI", 20, "bold"))
     label_name.pack(pady=10)
 
     label_name.configure(text_color="black")
@@ -103,10 +127,29 @@ def create_middle_pane(root, parent, combos):
     btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
     btn_frame.pack(pady=10)
 
-    btnRun = ctk.CTkButton(btn_frame, text="Run Algorithm", width=160, fg_color="#4A90E2", hover_color="#357ABD", command=lambda: RunCode_window(root))
+    def get_selected_algorithm():
+        if algorithm_var.get() in ["TÊN THUẬT TOÁN", "Uninformed Search Algorithm", "Informed Search Algorithm", "Local Search Algorithm", "Problem Decomposition Search"]:
+            return "Chưa chọn thuật toán"
+        return algorithm_var.get()
+    
+    def run_algorithm(root):
+        algo = get_selected_algorithm()
+        if algo == "Chưa chọn thuật toán":
+            messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi chạy!")
+        else:
+            RunCode_window(root, algo)
+
+    def view_code(root):
+        algo = get_selected_algorithm()
+        if algo == "Chưa chọn thuật toán":
+            messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi xem code!")
+        else:
+            ViewCode_window(root, algo)
+
+    btnRun = ctk.CTkButton(btn_frame, text="Run Algorithm", width=160, fg_color="#4A90E2", hover_color="#357ABD", command=lambda: run_algorithm(root))
     btnRun.pack(side="left", padx=10)
 
-    btnViewCode = ctk.CTkButton(btn_frame, text="View Code", width=160, fg_color="#50C878", hover_color="#3FA463", command=lambda: ViewCode_window(root))
+    btnViewCode = ctk.CTkButton(btn_frame, text="View Code", width=160, fg_color="#50C878", hover_color="#3FA463", command=lambda: view_code(root))
     btnViewCode.pack(side="left", padx=10)
 
 def create_right_pane(root, parent):

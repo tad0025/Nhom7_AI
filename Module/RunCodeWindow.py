@@ -2,7 +2,7 @@ import customtkinter as ctk
 from Module.CenterWindow import center_window
 from Module.GraphVisualizer import GraphApp
 
-def RunCode_window(root):
+def RunCode_window(root, algorithm):
     #Ẩn window chính
     root.withdraw()
 
@@ -34,7 +34,7 @@ def RunCode_window(root):
     btn_close = ctk.CTkButton(new_win, text="Close", command=close_window)
     btn_close.pack(side="right",pady=10)
 
-    new_win.protocol("WM_DELETE_WINDOW", close_window)
+    new_win.protocol("WM_DELETE_WINDOW", root.quit)
 
     # ====== CĂN GIỮA CỬA SỔ ======
     center_window(new_win)
