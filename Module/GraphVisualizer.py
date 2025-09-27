@@ -1,18 +1,32 @@
 import tkinter as tk
+import customtkinter as ctk
 import math
 
 class GraphApp:
-    def __init__(self, root):
+    def __init__(self, root: ctk.CTkFrame):
         self.root = root
-        self.canvas = tk.Canvas(root, width=800, height=600, bg='white')
-        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        # Lấy màu nền của CTkFrame cha để canvas đồng bộ
+        parent_bg_color = root.cget("fg_color")
+
+        # --- THAY ĐỔI CHÍNH ---
+        # Vẫn sử dụng tk.Canvas nhưng tùy chỉnh để nó hòa nhập vào giao diện.
+        self.canvas = tk.Canvas(
+            root,
+            bg=parent_bg_color,      # Đặt màu nền giống với frame cha
+            highlightthickness=0,  # Bỏ viền ngoài của canvas để không lộ
+            borderwidth=0
+        )
+        # Thêm một chút padding để các hình vẽ không bị quá sát viền
+        self.canvas.pack(fill="both", expand=True, padx=2, pady=2)
 
         self.nodes = {}   # {id: {"x":, "y":, "r":, "items":[...]}}
         self.edges = {}   # {id: {"n1":, "n2":, "item":}}
         self.node_id_counter = 0
         self.edge_id_counter = 0
 
-        # tạo vài node mẫu
+        # --- PHẦN TẠO ĐỒ THỊ MẪU (KHÔNG THAY ĐỔI) ---
+        # Tạo vài node mẫu
         positions = [
             (150, 150), (350, 150), (550, 150),
             (250, 350), (450, 350)
@@ -20,7 +34,7 @@ class GraphApp:
         for x, y in positions:
             self.create_node(x, y)
 
-        # tạo cạnh
+        # Tạo cạnh mẫu
         edges = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
         for n1, n2 in edges:
             self.create_edge(n1, n2)
