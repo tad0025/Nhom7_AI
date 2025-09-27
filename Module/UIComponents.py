@@ -2,7 +2,7 @@ import customtkinter as ctk
 from Module.RunCodeWindow import RunCode_window
 from Module.ViewCodeWindow import ViewCode_window
 
-def create_left_pane(parent):
+def create_left_pane(root, parent):
     frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
 
@@ -59,10 +59,8 @@ def create_left_pane(parent):
     combo4.pack(pady=5, padx=10)
     combo4.set("Problem Decomposition Search")
 
-    return frame
-
 def create_middle_pane(root, parent):
-    frame = ctk.CTkFrame(root, corner_radius=15)
+    frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
     frame.configure(fg_color="white")
 
@@ -107,8 +105,6 @@ def create_middle_pane(root, parent):
     btnViewCode = ctk.CTkButton(btn_frame, text="View Code", width=160, fg_color="#50C878", hover_color="#3FA463", command=lambda: ViewCode_window(root))
     btnViewCode.pack(side="left", padx=10)
 
-    return frame
-
 def create_right_pane(root, parent):
     frame = ctk.CTkFrame(parent, corner_radius=15)
     frame.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
@@ -124,5 +120,3 @@ def create_right_pane(root, parent):
 
     btnCloseApp = ctk.CTkButton(frame, text="Close App", width=160, fg_color="#FF6347", hover_color="#E05A44", command=root.quit)
     btnCloseApp.pack( padx=10)
-
-    return frame
