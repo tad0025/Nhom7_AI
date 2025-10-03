@@ -87,9 +87,9 @@ class GraphApp:
         # Quyết định màu nền dựa trên vai trò của node
         fill_color = "white"  # Mặc định
         if node_role == "start":
-            fill_color = "#008000"  # Màu xanh cho start node
+            fill_color = "mediumseagreen"  # Màu xanh cho start node
         elif node_role == "goal":
-            fill_color = "gold"    # Màu vàng cho goal node
+            fill_color = "#ff6347"    # Màu vàng cho goal node
 
         # Vẽ vòng tròn với màu nền đã được quyết định
         circle = self.canvas.create_oval(x-r, y-r, x+r, y+r, outline="black", fill=fill_color)

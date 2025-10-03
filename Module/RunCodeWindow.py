@@ -11,7 +11,7 @@ def RunCode_window(root, algorithm):
     new_win.geometry("1220x700")
 
     #Giữ theme
-    ctk.set_default_color_theme("blue")
+    ctk.set_default_color_theme("green")
     new_win.configure(fg_color="#9999FF")
 
     #Nội dụng

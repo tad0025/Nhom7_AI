@@ -11,7 +11,7 @@ def ViewCode_window(root, algorithm):
 
     # Giữ theme đồng bộ với root
     new_win.configure(fg_color="#9999FF")
-    ctk.set_default_color_theme("blue")   # "blue" / "green" / "dark-blue"
+    ctk.set_default_color_theme("green")   # "blue" / "green" / "dark-blue"
 
     # Nội dung trong cửa sổ con
     lbl = ctk.CTkLabel(new_win, text=algorithm, font=ctk.CTkFont("Arial", size=20, weight="bold"))
