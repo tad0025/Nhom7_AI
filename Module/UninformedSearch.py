@@ -1,7 +1,5 @@
 import collections
 
-# ------------------- CÁC HÀM THUẬT TOÁN -------------------
-
 def bfs(graph, start_node, goal_node):
     """Thực thi thuật toán Breadth-First Search."""
     print("Running BFS...")
