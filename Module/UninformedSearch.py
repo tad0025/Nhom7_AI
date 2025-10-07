@@ -1,4 +1,10 @@
 import collections
+from  Module.GraphVisualizer import GraphApp
+import customtkinter as ctk
+
+
+root = ctk.CTk()
+graph_app = GraphApp(root)
 
 def bfs(graph, start_node, goal_node):
     """Thực thi thuật toán Breadth-First Search."""
@@ -32,18 +38,48 @@ def dfs(graph, start_node, goal_node):
     """Thực thi thuật toán Depth-First Search."""
     print("Running DFS...")
     # ... Logic của DFS ...
-    return {"path": [], "visited": []}
+    v = []
+    solution = None
+    stack = [(start_node,[start_node])]
+    while stack:
+        node, path = stack.pop()
+
+
+        if node not in v:
+            v.append(node)
+        
+            if node == goal_node:
+                solution = path
+                break
+
+
+        for neighbor in reversed(graph.get(node, [])):
+            if neighbor not in v:
+                stack.append((neighbor, path +[neighbor]))
+
+
+     # In ra kết quả (giữ đúng tinh thần của bạn)
+    if solution:
+        print("Path:", " → ".join(map(str, solution)))
+        print({"path": solution if solution else [], "visited": v})
+    else:
+        print("No path found!")
+
+    return {"path": solution if solution else [], "visited": v}
+
 
 def dls(graph, start_node, goal_node, depth_limit):
     """Thực thi thuật toán Depth-Limited Search."""
     print("Running DLS...")
-    # ... Logic của DLS ...
+
     return {"path": [], "visited": []}
 
 def ids(graph, start_node, goal_node):
     """Thực thi thuật toán Iterative Deepening Search."""
     print("Running IDS...")
     # ... Logic của IDS ...
+
+
     return {"path": [], "visited": []}
 
 

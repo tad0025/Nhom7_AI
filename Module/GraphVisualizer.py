@@ -24,6 +24,16 @@ class GraphApp:
 
         self.canvas.bind("<Configure>", self.center_and_redraw_graph)
 
+        def get_graph_as_dict(self):
+            graph = {}
+            for node_id in self.nodes:
+                graph[node_id] = []
+            for edge_id, (u, v) in self.edges.items():
+                graph[u].append(v)
+                graph[v].append(u)   # nếu là graph vô hướng
+            return graph
+
+
     def highlight_nodes(self, start_id=None, goal_id=None):
         """
         Lưu lại ID của start và goal node, sau đó vẽ lại đồ thị.

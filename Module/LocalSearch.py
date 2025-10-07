@@ -48,15 +48,41 @@ def ids(graph, start_node, goal_node):
     # ... Logic của IDS ...
     return {"path": [], "visited": []}
 
+def heuristic(node, goal, positions):
+    x1 ,y1 = positions[node]
+    x2 ,y2 = positions[goal]
+
+    return((x1 - x2)**2 + (y1 - y2)**2)**0.5
+def HC(graph, start_node, goal_node):
+
+    cur = start_node
+    path = [cur]
+
+    while True:
+        neighbors = [n for (n, cost) in graph[cur]]
+
+        if not neighbors:
+            break
+        
+        next = min(neighbors, key= lambda n: heuristic(n,goal_node,positions))
+
+        if heuristic(next, goal_node, path) >= heuristic(cur,goal_node,positions):
+            break
+
+        cur = next
+        path.append(cur)
+
+        if cur == goal_node:
+            break
+
+    return path
+    
 
 # ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
 
 # Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
 ALGORITHMS = {
-    "BFS": bfs,
-    "DFS": dfs,
-    "DLS": dls,
-    "IDS": ids,
+    "Hill climbing": HC
 }
 
 def run_algorithm(root, name, graph, start, goal):

@@ -1,5 +1,5 @@
 import collections
-
+from heapq import heappop, heappush
 # ------------------- CÁC HÀM THUẬT TOÁN -------------------
 
 def bfs(graph, start_node, goal_node):
@@ -47,16 +47,63 @@ def ids(graph, start_node, goal_node):
     print("Running IDS...")
     # ... Logic của IDS ...
     return {"path": [], "visited": []}
+def heuristic(node, goal, positions):
+    x1 ,y1 = positions[node]
+    x2 ,y2 = positions[goal]
+
+    return((x1 - x2)**2 + (y1 - y2)**2)**0.5
+
+def ASSearch(graph, start_node, goal_node):
+    """Thực thi thuật toán A* Search."""
+    print("Running ASSearch...")
+    # ... Logic của ASSearch ...
+    pq = []
+    g_scores = {start_node: 0}
+    f_start = heuristic(start_node,goal_node)
+
+    heappush(pq,(f_start,0,start_node))
+
+    came_from = {}
+    closed = set()
+    while pq:
+        f_curr, g_curr, node = heappop(pq)
+
+        if node in closed:
+            continue
+
+        if node == goal_node:
+
+            path = []
+            k = node
+            while k in came_from:
+                path.append(k)
+                k = came_from[k]
+            path.append(start_node)
+            path.reverse()
+
+            return tuple(path + g_curr)
+        
+        closed.add(node)
+
+        for neighbor, step_cost in graph[node]:
+            g_child = g_curr + step_cost
+            if neighbor in g_scores and g_child >= g_scores[neighbor]:
+                continue
+
+            g_scores[neighbor] = g_child
+            came_from[neighbor] = node
+            f_child = g_child + heuristic(neighbor, goal_node, positions)
+            heappush(pq, (f_child,g_child, neighbor))
+
+    return {"path": [], "visited": []}
+
 
 
 # ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
 
 # Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
 ALGORITHMS = {
-    "BFS": bfs,
-    "DFS": dfs,
-    "DLS": dls,
-    "IDS": ids,
+   "A*": ASSearch
 }
 
 def run_algorithm(root, name, graph, start, goal):
