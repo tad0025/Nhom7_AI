@@ -1,4 +1,5 @@
 import collections
+import itertools
 from  Module.GraphVisualizer import GraphApp
 import customtkinter as ctk
 
@@ -67,14 +68,28 @@ def dfs(graph, start_node, goal_node):
 
     return {"path": solution if solution else [], "visited": v}
 
-def ids(graph, start_node, goal_node):
-    """Thực thi thuật toán Iterative Deepening Search."""
-    print("Running IDS...")
-    # ... Logic của IDS ...
+class ids:
+    def __init__(self, graph, start_node, goal_node):
+        for depth in itertools.count():
+            result = self.depth_bounded_search(graph, start_node, goal_node, depth)
+            if result is not None: return result
+            
+            # Để tránh vòng lặp vô hạn trên đồ thị không có lời giải,
+            # bạn có thể thêm điều kiện dừng (ví dụ: depth > 20).
+    
+    def is_goal(self, node, goal_node):
+        return node == goal_node
 
-
-    return {"path": [], "visited": []}
-
+    def depth_bounded_search(self, graph, current_node, goal_node, depth_bound):
+        if self.is_goal(current_node, goal_node):
+            return [current_node]
+        
+        if depth_bound <= 0: return None
+        for neighbor in graph.get(current_node, []):
+            path_found = self.depth_bounded_search(graph, neighbor, goal_node, depth_bound - 1)
+            if path_found is not None:
+                return [current_node] + path_found
+        return None
 
 # ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
 
@@ -82,7 +97,6 @@ def ids(graph, start_node, goal_node):
 ALGORITHMS = {
     "BFS": bfs,
     "DFS": dfs,
-    "DLS": dls,
     "IDS": ids,
 }
 
