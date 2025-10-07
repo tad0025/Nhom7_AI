@@ -1,52 +1,7 @@
 import collections
-from heapq import heappop, heappush
+from heapq import heappop, heappush, heapify
 # ------------------- CÁC HÀM THUẬT TOÁN -------------------
 
-def bfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Breadth-First Search."""
-    print("Running BFS...")
-    visited_nodes = []
-    path = []
-    # Dùng deque để tối ưu cho việc pop ở đầu hàng đợi
-    queue = collections.deque([(start_node, [start_node])]) 
-    
-    while queue:
-        current_node, current_path = queue.popleft()
-        
-        if current_node not in visited_nodes:
-            visited_nodes.append(current_node)
-            
-            if current_node == goal_node:
-                path = current_path
-                break
-            
-            # Giả sử graph có dạng {'A': ['B', 'C'], ...}
-            # neighbors = graph.get(current_node, [])
-            # for neighbor in neighbors:
-            #     if neighbor not in visited_nodes:
-            #         new_path = list(current_path)
-            #         new_path.append(neighbor)
-            #         queue.append((neighbor, new_path))
-            
-    return {"path": path, "visited": visited_nodes}
-
-def dfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Depth-First Search."""
-    print("Running DFS...")
-    # ... Logic của DFS ...
-    return {"path": [], "visited": []}
-
-def dls(graph, start_node, goal_node, depth_limit):
-    """Thực thi thuật toán Depth-Limited Search."""
-    print("Running DLS...")
-    # ... Logic của DLS ...
-    return {"path": [], "visited": []}
-
-def ids(graph, start_node, goal_node):
-    """Thực thi thuật toán Iterative Deepening Search."""
-    print("Running IDS...")
-    # ... Logic của IDS ...
-    return {"path": [], "visited": []}
 def heuristic(node, goal, positions):
     x1 ,y1 = positions[node]
     x2 ,y2 = positions[goal]
@@ -97,21 +52,42 @@ def ASSearch(graph, start_node, goal_node):
 
     return {"path": [], "visited": []}
 
+class UCSearch:
+    def __init__(self, graph, start_node, goal_node):
+        frontier = [(0, start_node, [start_node])]
+        explored = set()
+        while frontier:
+            (cost, current_node, path) = heappop(frontier)
 
+            # 2. Nếu nút này đã được khám phá với chi phí bằng hoặc thấp hơn, bỏ qua
+            # if current_node in explored:
+            #     continue
+
+            if self.is_goal(current_node, goal_node): return (path, cost)
+            explored.add(current_node)
+
+            for neighbor, step_cost in graph.get(current_node, []):
+                in_frontier = any(neighbor == n for c, n, p in frontier)
+                new_cost = cost + step_cost
+                new_path = path + [neighbor]
+                if (neighbor not in explored) or (not in_frontier):
+                    heappush(frontier, (new_cost, neighbor, new_path))
+                elif (in_frontier) and (step_cost + cost < next((c for c, n, p in frontier if n == neighbor), float('inf'))):
+                    frontier = [(c, n, p) for (c, n, p) in frontier if n != neighbor]
+                    heapify(frontier)
+                    heappush(frontier, (new_cost, neighbor, new_path))
+        return (None, float('inf'))
+    
+    def is_goal(self, node, goal_node):
+        return node == goal_node
 
 # ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
-
-# Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
 ALGORITHMS = {
-   "A*": ASSearch
+   "A*": ASSearch,
+   "UCS" : UCSearch
 }
 
 def run_algorithm(root, name, graph, start, goal):
-    """
-    Hàm điều phối: gọi hàm thuật toán tương ứng dựa vào tên.
-    """
-    
-    # Lấy hàm từ dictionary và gọi nó
     algorithm_func = ALGORITHMS[name]
     
     # Xử lý các trường hợp đặc biệt, ví dụ DLS cần thêm tham số `depth_limit`
@@ -123,9 +99,5 @@ def run_algorithm(root, name, graph, start, goal):
 
 
 def get_code():
-    """
-    Hàm này trả về mã nguồn của toàn bộ file.
-    Cửa sổ ViewCode sẽ hiển thị toàn bộ file, người dùng có thể tự xem hàm mình cần.
-    """
     with open(__file__, 'r', encoding='utf-8') as f:
         return f.read()

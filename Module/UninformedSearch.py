@@ -67,13 +67,6 @@ def dfs(graph, start_node, goal_node):
 
     return {"path": solution if solution else [], "visited": v}
 
-
-def dls(graph, start_node, goal_node, depth_limit):
-    """Thực thi thuật toán Depth-Limited Search."""
-    print("Running DLS...")
-
-    return {"path": [], "visited": []}
-
 def ids(graph, start_node, goal_node):
     """Thực thi thuật toán Iterative Deepening Search."""
     print("Running IDS...")
