@@ -1,53 +1,9 @@
 import collections
+import itertools
+import math
+from random import random
 
 # ------------------- CÁC HÀM THUẬT TOÁN -------------------
-
-def bfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Breadth-First Search."""
-    print("Running BFS...")
-    visited_nodes = []
-    path = []
-    # Dùng deque để tối ưu cho việc pop ở đầu hàng đợi
-    queue = collections.deque([(start_node, [start_node])]) 
-    
-    while queue:
-        current_node, current_path = queue.popleft()
-        
-        if current_node not in visited_nodes:
-            visited_nodes.append(current_node)
-            
-            if current_node == goal_node:
-                path = current_path
-                break
-            
-            # Giả sử graph có dạng {'A': ['B', 'C'], ...}
-            # neighbors = graph.get(current_node, [])
-            # for neighbor in neighbors:
-            #     if neighbor not in visited_nodes:
-            #         new_path = list(current_path)
-            #         new_path.append(neighbor)
-            #         queue.append((neighbor, new_path))
-            
-    return {"path": path, "visited": visited_nodes}
-
-def dfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Depth-First Search."""
-    print("Running DFS...")
-    # ... Logic của DFS ...
-    return {"path": [], "visited": []}
-
-def dls(graph, start_node, goal_node, depth_limit):
-    """Thực thi thuật toán Depth-Limited Search."""
-    print("Running DLS...")
-    # ... Logic của DLS ...
-    return {"path": [], "visited": []}
-
-def ids(graph, start_node, goal_node):
-    """Thực thi thuật toán Iterative Deepening Search."""
-    print("Running IDS...")
-    # ... Logic của IDS ...
-    return {"path": [], "visited": []}
-
 def heuristic(node, goal, positions):
     x1 ,y1 = positions[node]
     x2 ,y2 = positions[goal]
@@ -77,12 +33,29 @@ def HC(graph, start_node, goal_node):
 
     return path
     
-
+class SA:
+    def __init__(self, graph, start_node, goal_node):
+        current = start_node
+        T = 100; alpha = 0.99
+        for t in itertools.count(1):
+            if T < 1e-9: return current
+            neighbors = graph.get(current)
+            if not neighbors: return current
+            next_node = random.choice(neighbors)
+            delta_e = heuristic(next_node, goal_node, positions) - heuristic(current, goal_node, positions)
+            if delta_e >= 0: current = next_node
+            else:
+                probability = math.exp(delta_e / T)
+                if random.random() < probability:
+                    current = next_node
+            T *= alpha
+    
 # ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
 
 # Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
 ALGORITHMS = {
-    "Hill climbing": HC
+    "Hill climbing": HC,
+    "Simulated Annealing": SA
 }
 
 def run_algorithm(root, name, graph, start, goal):
