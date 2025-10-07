@@ -59,10 +59,6 @@ class UCSearch:
         while frontier:
             (cost, current_node, path) = heappop(frontier)
 
-            # 2. Nếu nút này đã được khám phá với chi phí bằng hoặc thấp hơn, bỏ qua
-            # if current_node in explored:
-            #     continue
-
             if self.is_goal(current_node, goal_node): return (path, cost)
             explored.add(current_node)
 
