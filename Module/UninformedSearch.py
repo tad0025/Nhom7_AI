@@ -1,125 +1,49 @@
 import collections
 import itertools
-from  Module.GraphVisualizer import GraphApp
-import customtkinter as ctk
-
-
-root = ctk.CTk()
-graph_app = GraphApp(root)
-
-def bfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Breadth-First Search."""
-    print("Running BFS...")
-    visited_nodes = []
-    path = []
-    # Dùng deque để tối ưu cho việc pop ở đầu hàng đợi
-    queue = collections.deque([(start_node, [start_node])]) 
-    
-    while queue:
-        current_node, current_path = queue.popleft()
-        
-        if current_node not in visited_nodes:
-            visited_nodes.append(current_node)
-            
-            if current_node == goal_node:
-                path = current_path
-                break
-            
-            # Giả sử graph có dạng {'A': ['B', 'C'], ...}
-            # neighbors = graph.get(current_node, [])
-            # for neighbor in neighbors:
-            #     if neighbor not in visited_nodes:
-            #         new_path = list(current_path)
-            #         new_path.append(neighbor)
-            #         queue.append((neighbor, new_path))
-            
-    return {"path": path, "visited": visited_nodes}
 
 def dfs(graph, start_node, goal_node):
-    """Thực thi thuật toán Depth-First Search."""
-    print("Running DFS...")
-    # ... Logic của DFS ...
-    v = []
+    v = []; history = []
     solution = None
     stack = [(start_node,[start_node])]
     while stack:
         node, path = stack.pop()
+        history.append(' → '.join(map(str, path)))
+        v.append(node)
 
+        if node == goal_node:
+            solution = path
+            break
 
-        if node not in v:
-            v.append(node)
-        
-            if node == goal_node:
-                solution = path
-                break
-
-
-        for neighbor in reversed(graph.get(node, [])):
+        for neighbor, _ in reversed(graph.get(node, [])):
             if neighbor not in v:
                 stack.append((neighbor, path +[neighbor]))
+    return ' → '.join(map(str, solution)) if solution else 'KHÔNG TÌM THẤY', history
 
+def ids(graph, start_node, goal_node):
+    depth = 0
+    solution = None
+    history = []
+    while True:
+        v = []
+        stack = [(start_node, [start_node], 0)]  # (node, path, current_depth)
+        found = False
 
-     # In ra kết quả (giữ đúng tinh thần của bạn)
-    if solution:
-        print("Path:", " → ".join(map(str, solution)))
-        print({"path": solution if solution else [], "visited": v})
-    else:
-        print("No path found!")
+        while stack:
+            node, path, current_depth = stack.pop()
+            history.append(' → '.join(map(str, path)) + f" (depth: {current_depth})")
+            v.append(node)
 
-    return {"path": solution if solution else [], "visited": v}
+            if node == goal_node:
+                solution = path
+                found = True
+                break
 
-class ids:
-    def __init__(self, graph, start_node, goal_node):
-        for depth in itertools.count():
-            result = self.depth_bounded_search(graph, start_node, goal_node, depth)
-            if result is not None: return result
-            
-            # Để tránh vòng lặp vô hạn trên đồ thị không có lời giải,
-            # bạn có thể thêm điều kiện dừng (ví dụ: depth > 20).
-    
-    def is_goal(self, node, goal_node):
-        return node == goal_node
+            if current_depth < depth:
+                for neighbor, _ in reversed(graph.get(node, [])):
+                    if neighbor not in v:
+                        stack.append((neighbor, path + [neighbor], current_depth + 1))
 
-    def depth_bounded_search(self, graph, current_node, goal_node, depth_bound):
-        if self.is_goal(current_node, goal_node):
-            return [current_node]
-        
-        if depth_bound <= 0: return None
-        for neighbor in graph.get(current_node, []):
-            path_found = self.depth_bounded_search(graph, neighbor, goal_node, depth_bound - 1)
-            if path_found is not None:
-                return [current_node] + path_found
-        return None
+        if found: break
+        depth += 1
 
-# ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
-
-# Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
-ALGORITHMS = {
-    "BFS": bfs,
-    "DFS": dfs,
-    "IDS": ids,
-}
-
-def run_algorithm(root, name, graph, start, goal):
-    """
-    Hàm điều phối: gọi hàm thuật toán tương ứng dựa vào tên.
-    """
-    
-    # Lấy hàm từ dictionary và gọi nó
-    algorithm_func = ALGORITHMS[name]
-    
-    # Xử lý các trường hợp đặc biệt, ví dụ DLS cần thêm tham số `depth_limit`
-    if name == "DLS":
-        # (Bạn cần lấy `depth_limit` từ giao diện người dùng)
-        return algorithm_func(root, graph, start, goal, depth_limit=10) 
-    else:
-        return algorithm_func(root, graph, start, goal)
-
-
-def get_code():
-    """
-    Hàm này trả về mã nguồn của toàn bộ file.
-    Cửa sổ ViewCode sẽ hiển thị toàn bộ file, người dùng có thể tự xem hàm mình cần.
-    """
-    with open(__file__, 'r', encoding='utf-8') as f:
-        return f.read()
+    return ' → '.join(map(str, solution)) + f" (depth: {depth})" if solution else 'KHÔNG TÌM THẤY', history
