@@ -19,7 +19,8 @@ class GraphApp:
 
         self.start_node_id = None
         self.goal_node_id = None
-        self.final_path = [] # Biến lưu đường đi cuối cùng cho bước END
+        
+        self.canvas.bind("<Configure>", self.center_and_redraw_graph)
         
     def highlight_nodes(self, start_id=None, goal_id=None):
         """Dùng cho cửa sổ chính (Middle Pane) để highlight Start/Goal khi nhập"""
@@ -48,7 +49,9 @@ class GraphApp:
         path = path.split(' → '); path[-1] = path[-1].split(' ')[0]
         path = list(map(int, path))
         if not path: return
-        
+        self.center_and_redraw_graph(path=path)
+
+    def center_and_redraw_graph(self, event=None, path=[]):
         self.canvas.delete("all")
         self.nodes_draw_items = {}
         self.edges_draw_items = {}

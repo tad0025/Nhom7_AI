@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import messagebox
+from time import sleep
 from Module.CenterWindow import center_window
 from Module.GraphVisualizer import GraphApp
 from Module.GraphData import get_graph_data
@@ -123,10 +123,14 @@ def RunCode_window(root):
     except Exception as e:
         add_log(log_textbox, f"LỖI HỆ THỐNG: {e}")
     
-    for step in history:
-        next_step()  # tự động tiến đến bước cuối cùng để hiển thị kết quả ngay
-        new_win.update()
-        new_win.after(200)
+    def auto_run_steps(step_index=0):
+        nonlocal current_step_index
+        if step_index < total_steps:
+            current_step_index = step_index
+            next_step()
+            new_win.update()
+            new_win.after(200, lambda: auto_run_steps(step_index + 1))
+    if history: auto_run_steps()
 
     # Close
     def close_window():
