@@ -1,7 +1,4 @@
-import collections
-import itertools
-
-def dfs(graph, start_node, goal_node):
+def dfs(graph, start_node, goal_node, positions):
     v = []; history = []
     solution = None
     stack = [(start_node,[start_node])]
@@ -19,7 +16,7 @@ def dfs(graph, start_node, goal_node):
                 stack.append((neighbor, path +[neighbor]))
     return ' → '.join(map(str, solution)) if solution else 'KHÔNG TÌM THẤY', history
 
-def ids(graph, start_node, goal_node):
+def ids(graph, start_node, goal_node, positions):
     depth = 0
     solution = None
     history = []

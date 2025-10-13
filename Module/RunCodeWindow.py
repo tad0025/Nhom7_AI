@@ -4,6 +4,7 @@ from Module.CenterWindow import center_window
 from Module.GraphVisualizer import GraphApp
 from Module.GraphData import get_graph_data
 from Module.UninformedSearch import *
+from Module.IninformedSearch import *
 
 def add_log(log_textbox, message):
         log_textbox.configure(state="normal")
@@ -43,7 +44,7 @@ def RunCode_window(root):
             current_step_index -= 1
             update_ui()
     
-    graph, node_weights, _, _ = get_graph_data()
+    graph, node_weights, positions, _ = get_graph_data()
     start_node = int(root.TxtboxStartNode.get())
     goal_node = int(root.TxtboxGoalNode.get())
     #Ẩn window chính
@@ -101,12 +102,13 @@ def RunCode_window(root):
     # chạy thuật toán
     alo_func = {
         "DFS": dfs,
-        "IDS": ids
+        "IDS": ids,
+        "A*": ASSearch
     }
     history = None; current_step_index = -1; total_steps = 0
     try:
         func = alo_func.get(root.algorithm)
-        solution, history = func(graph, start_node, goal_node) 
+        solution, history = func(graph, start_node, goal_node, positions)
         total_steps = len(history)
         add_log(root.txtboxtHistory, f"Thuật toán {root.algorithm} đã chạy xong ({total_steps} bước)")
         add_log(root.txtboxtHistory, f"Đường đi tìm được: {solution}")
