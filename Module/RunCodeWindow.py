@@ -6,6 +6,7 @@ from Module.GraphData import get_graph_data
 from Module.UninformedSearch import *
 from Module.IninformedSearch import *
 from Module.LocalSearch import *
+from Module.ComplexEvniroment import *
 
 def add_log(log_textbox, message):
         log_textbox.configure(state="normal")
@@ -105,7 +106,8 @@ def RunCode_window(root):
         "DFS": dfs,
         "IDS": ids,
         "A*": ASSearch,
-        "Hill Climbing": HC
+        "Hill Climbing": HC,
+        "Belief State Search": belief_Search
     }
     history = None; current_step_index = -1; total_steps = 0
     try:
