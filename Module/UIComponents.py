@@ -157,7 +157,7 @@ def create_middle_pane(root, parent, algorithm_var):
         if algo == "Chưa chọn thuật toán":
             messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi chạy!")
         else:
-            RunCode_window(root, algo)
+            RunCode_window(root, algo, TxtboxStartNode.get(), TxtboxGoalNode.get())
 
     def view_code(root):
         algo = get_selected_algorithm()
