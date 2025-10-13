@@ -17,12 +17,13 @@ def create_left_pane(root, parent, algorithm_var):
         "Uninformed": "Uninformed Search Algorithm",
         "Informed": "Informed Search Algorithm",
         "Local": "Local Search Algorithm",
-        "Decomposition": "Problem Decomposition Search"
+        "Complex Enviroment": "Complex Enviroment Search",
+        "CSP": "Constraint Satisfaction Problems",
     }
 
     combo1 = ctk.CTkComboBox(
         frame,
-        values = ["BFS", "DFS", "DLS", "IDS"],
+        values = ["BFS", "DFS", "IDS"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -46,7 +47,7 @@ def create_left_pane(root, parent, algorithm_var):
 
     combo3 = ctk.CTkComboBox(
         frame,
-        values = ["Hill Climbing", "Simulated Annealing", "Beam Search", "Genetic"],
+        values = ["Hill Climbing", "Simulated Annealing", "Genetic"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -58,7 +59,7 @@ def create_left_pane(root, parent, algorithm_var):
 
     combo4 = ctk.CTkComboBox(
         frame,
-        values = ["And-OR Search"],
+        values = ["And-OR Search", "Partially Observable Search", "Belief State Search"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -66,17 +67,30 @@ def create_left_pane(root, parent, algorithm_var):
         state="readonly"
     )
     combo4.pack(pady=5, padx=10)
-    combo4.set(default_texts["Decomposition"])
+    combo4.set(default_texts["Complex Enviroment"])
+
+    combo5 = ctk.CTkComboBox(
+        frame,
+        values = ["Bactracking", "Forward-Checking", "AC3"],
+        width=250,
+        height=30,
+        font=("Segoe UI", 14),
+        dropdown_font=("Segoe UI", 13),
+        state="readonly"
+    )
+    combo5.pack(pady= 5, padx = 10)
+    combo5.set(default_texts["CSP"])
 
     # Định nghĩa hàm xử lý sự kiện
-    all_combos = [combo1, combo2, combo3, combo4]
+    all_combos = [combo1, combo2, combo3, combo4,combo5]
     def handle_selection(selected_combo):
         algorithm_var.set(selected_combo.get())
         defaults = [
             default_texts["Uninformed"],
             default_texts["Informed"],
             default_texts["Local"],
-            default_texts["Decomposition"]
+            default_texts["Complex Enviroment"],
+            default_texts["CSP"]
         ]
         for i, combo in enumerate(all_combos):
             # if combo != selected_combo:
@@ -87,6 +101,7 @@ def create_left_pane(root, parent, algorithm_var):
     combo2.configure(command=lambda choice: handle_selection(combo2))
     combo3.configure(command=lambda choice: handle_selection(combo3))
     combo4.configure(command=lambda choice: handle_selection(combo4))
+    combo5.configure(command=lambda choice: handle_selection(combo5))
 
 def create_middle_pane(root, parent, algorithm_var):
     frame = ctk.CTkFrame(parent, corner_radius=15)
@@ -139,16 +154,20 @@ def create_middle_pane(root, parent, algorithm_var):
     def ClearBox():
         TxtboxStartNode.delete(0, "end")
         TxtboxGoalNode.delete(0, "end")
-        update_node_colors()
+        update_node_colors()\
+        
+    def RandomCost():
+        pass
 
     btnCLear = ctk.CTkButton(input_frame, text="Clear", font=("Segoe UI", 14), command=ClearBox).grid(row=1, column=2, padx=5, pady=5, sticky="w")
+    btnRandomCost = ctk.CTkButton(input_frame, text="Random Cost", font=("Segoe UI", 14),command=RandomCost).grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
     # Buttons
     btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
     btn_frame.pack(pady=10)
 
     def get_selected_algorithm():
-        if algorithm_var.get() in ["TÊN THUẬT TOÁN", "Uninformed Search Algorithm", "Informed Search Algorithm", "Local Search Algorithm", "Problem Decomposition Search"]:
+        if algorithm_var.get() in ["TÊN THUẬT TOÁN", "Uninformed Search Algorithm", "Informed Search Algorithm", "Local Search Algorithm", "Complex Enviroment Search", "Constraint Satisfaction Problems"]:
             return "Chưa chọn thuật toán"
         return algorithm_var.get()
     
@@ -184,6 +203,6 @@ def create_right_pane(root, parent):
     txtboxtHistory.pack(padx=10, pady=10, fill="both", expand=True)
     txtboxtHistory.insert("0.0", "Kết quả thuật toán...\nNode path: A → B → C")
     txtboxtHistory.configure(state="disabled")
-
+    
     btnCloseApp = ctk.CTkButton(frame, text="Close App", width=160, fg_color="#FF6347", hover_color="#E05A44", command=root.quit)
-    btnCloseApp.pack( padx=10)
+    btnCloseApp.pack(padx=10, pady=10)
