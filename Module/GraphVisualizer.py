@@ -3,7 +3,7 @@ import math
 from Module.GraphData import get_graph_data 
 
 class GraphApp:
-    def __init__(self, root):
+    def __init__(self, root, random=False):
         self.root = root
         self.canvas = tk.Canvas(root, bg='white', highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
@@ -12,7 +12,7 @@ class GraphApp:
         self.edges_draw_items = {} 
         
         # ** Lấy toàn bộ 4 phần dữ liệu từ GraphData
-        self.adj_list, self.node_weights, self.original_positions, self.original_edges = get_graph_data()
+        self.adj_list, self.node_weights, self.original_positions, self.original_edges = get_graph_data(random)
         
         self.node_id_counter = 0
         self.edge_id_counter = 0

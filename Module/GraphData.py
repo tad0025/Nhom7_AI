@@ -1,38 +1,93 @@
-# Dữ liệu Vị trí và Cạnh gốc (Sử dụng cho GraphApp để vẽ UI)
-ORIGINAL_POSITIONS = [
+import random
+from typing import List, Tuple, Dict, Any
+
+# ====================================================================
+# # Cấu hình Phạm vi Ngẫu nhiên
+# ====================================================================
+
+MIN_NODE_WEIGHT: int = 10
+MAX_NODE_WEIGHT: int = 100
+MIN_EDGE_COST: int = 10
+MAX_EDGE_COST: int = 90
+DEFAULT_EDGE_COST: int = 55 # Chi phí mặc định nếu không tìm thấy trong dict ngẫu nhiên
+
+# ====================================================================
+# # Dữ liệu Cố định (Cấu trúc đồ thị gốc)
+# ====================================================================
+
+# Vị trí (Tọa độ cố định cho 5 nút, dùng cho UI)
+ORIGINAL_POSITIONS: List[Tuple[int, int]] = [
     (150, 150), (350, 150), (550, 150),
     (250, 350), (450, 350)
 ]
-NUM_NODES = len(ORIGINAL_POSITIONS)
-ORIGINAL_EDGES = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
+NUM_NODES: int = len(ORIGINAL_POSITIONS)
 
-# Trọng số và Chi phí (Sử dụng cho Thuật toán và UI)
-ORIGINAL_NODE_WEIGHTS = {0: 10, 1: 20, 2: 30, 3: 40, 4: 50}
-ORIGINAL_EDGE_COSTS = {(0, 1): 15, (1, 2): 25, (0, 3): 35, (1, 4): 45, (2, 4): 55, (3, 4): 65} 
-DEFAULT_EDGE_COST = 55
+# Các cạnh (Liên kết cố định)
+ORIGINAL_EDGES: List[Tuple[int, int]] = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
 
+# ====================================================================
+# # Hàm Tạo Dữ liệu Ngẫu nhiên
+# ====================================================================
 
-def get_graph_data():
+def _generate_random_node_weights(num_nodes: int) -> Dict[int, int]:
+    """Tạo ngẫu nhiên trọng số cho tất cả các đỉnh."""
+    weights = {}
+    for i in range(num_nodes):
+        weights[i] = random.randint(MIN_NODE_WEIGHT, MAX_NODE_WEIGHT)
+    return weights
+
+def _generate_random_edge_costs(edges: List[Tuple[int, int]]) -> Dict[Tuple[int, int], int]:
+    """Tạo ngẫu nhiên chi phí cho các cạnh gốc."""
+    costs = {}
+    for u, v in edges:
+        # Sử dụng tuple đã sắp xếp để lưu trữ chi phí cạnh vô hướng
+        key = tuple(sorted((u, v))) 
+        costs[key] = random.randint(MIN_EDGE_COST, MAX_EDGE_COST)
+    return costs
+
+# ====================================================================
+# **KHỞI TẠO DỮ LIỆU NGẪU NHIÊN (BÊN NGOÀI HÀM get_graph_data)**
+# Dữ liệu này được tạo MỘT LẦN khi chương trình khởi động.
+# ====================================================================
+RANDOM_NODE_WEIGHTS: Dict[int, int] = _generate_random_node_weights(NUM_NODES)
+RANDOM_EDGE_COSTS: Dict[Tuple[int, int], int] = _generate_random_edge_costs(ORIGINAL_EDGES)
+
+# ====================================================================
+# # Hàm Chính
+# ====================================================================
+
+def get_graph_data(random = False) -> Tuple[Dict[int, List[Tuple[int, int]]], Dict[int, int], List[Tuple[int, int]], List[Tuple[int, int]]]:
     """
     Trả về toàn bộ cấu trúc dữ liệu cần thiết cho cả Thuật toán và UI.
+    Sử dụng trọng số và chi phí ngẫu nhiên đã được tạo sẵn bên ngoài hàm.
     
     Trả về: (adj_list, node_weights, original_positions, original_edges)
     """
-    adj = {}
-    node_weights = {}
-    
-    # 1. Xây dựng Trọng số Đỉnh
-    for i in range(NUM_NODES):
-        node_weights[i] = ORIGINAL_NODE_WEIGHTS.get(i, 99)
-        adj[i] = []
+    global RANDOM_NODE_WEIGHTS, RANDOM_EDGE_COSTS
+    if random:
+        RANDOM_NODE_WEIGHTS = _generate_random_node_weights(NUM_NODES)
+        RANDOM_EDGE_COSTS = _generate_random_edge_costs(ORIGINAL_EDGES)
 
-    # 2. Xây dựng Danh sách Kề kèm Chi phí Cạnh
+    adj: Dict[int, List[Tuple[int, int]]] = {}
+    node_weights: Dict[int, int] = {}
+    
+    # 1. Xây dựng Trọng số Đỉnh (Sử dụng dữ liệu RANDOM_NODE_WEIGHTS đã tạo)
+    for i in range(NUM_NODES):
+        # Lấy trọng số ngẫu nhiên đã tạo
+        node_weights[i] = RANDOM_NODE_WEIGHTS.get(i, MIN_NODE_WEIGHT) 
+        adj[i] = [] # Khởi tạo danh sách kề
+
+    # 2. Xây dựng Danh sách Kề kèm Chi phí Cạnh (Sử dụng dữ liệu RANDOM_EDGE_COSTS đã tạo)
     for u, v in ORIGINAL_EDGES:
-        cost = ORIGINAL_EDGE_COSTS.get(tuple(sorted((u, v))), DEFAULT_EDGE_COST) 
+        # Lấy chi phí ngẫu nhiên đã tạo (sử dụng khóa đã sắp xếp)
+        key = tuple(sorted((u, v))) 
+        cost = RANDOM_EDGE_COSTS.get(key, DEFAULT_EDGE_COST) 
         
+        # Thêm cạnh vào danh sách kề (Đồ thị vô hướng)
         if v not in [n for n, c in adj[u]]:
             adj[u].append((v, cost))
         if u not in [n for n, c in adj[v]]:
             adj[v].append((u, cost))
             
+    # Trả về Danh sách Kề, Trọng số, Vị trí (cố định), và Cạnh (cố định)
     return adj, node_weights, ORIGINAL_POSITIONS, ORIGINAL_EDGES

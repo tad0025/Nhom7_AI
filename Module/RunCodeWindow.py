@@ -5,13 +5,13 @@ from Module.GraphVisualizer import GraphApp
 from Module.GraphData import get_graph_data
 from Module.BFS import BFS_Algorithm
 
-def RunCode_window(root, algorithm, start_node_str, goal_node_str):
-    def add_log(message):
+def add_log(log_textbox, message):
         log_textbox.configure(state="normal")
         log_textbox.insert("end", message + "\n")
         log_textbox.configure(state="disabled")
         log_textbox.see("end")
 
+def RunCode_window(root):
     def update_ui():
         """Cập nhật giao diện dựa trên bước hiện tại trong lịch sử."""
         if not history or current_step_index < 0 or current_step_index >= total_steps:
@@ -27,12 +27,12 @@ def RunCode_window(root, algorithm, start_node_str, goal_node_str):
         step_label.configure(text=f"Bước: {current_step_index + 1} / {total_steps}\nTrạng thái: {status}")
         
         # 3. Cập nhật Textbox Log
-        add_log(f"Bước {current_step_index + 1}: {status}")
+        add_log(log_textbox, f"Bước {current_step_index + 1}: {status}")
         if status == 'EXPLORING':
-            add_log(f"    -> Duyệt Node: {step_data.get('processing_node')}")
+            add_log(log_textbox, f"    -> Duyệt Node: {step_data.get('processing_node')}")
         elif status == 'ADDED_TO_QUEUE':
-            add_log(f"    -> Khám phá: {step_data.get('current_node')} -> {step_data.get('processing_node')}")
-        add_log(f"    Queue: {step_data.get('queue', [])}")
+            add_log(log_textbox, f"    -> Khám phá: {step_data.get('current_node')} -> {step_data.get('processing_node')}")
+        add_log(log_textbox, f"    Queue: {step_data.get('queue', [])}")
         
         # 4. Cập nhật trạng thái nút
         btn_prev.configure(state="normal" if current_step_index > 0 else "disabled")
@@ -52,6 +52,8 @@ def RunCode_window(root, algorithm, start_node_str, goal_node_str):
             
     # 1. Xử lý Input
     try:
+        start_node_str = root.TxtboxStartNode.get()
+        goal_node_str = root.TxtboxGoalNode.get()
         start_node = int(start_node_str) if start_node_str.isdigit() else -1
         goal_node = int(goal_node_str) if goal_node_str.isdigit() else -1
         
@@ -76,7 +78,7 @@ def RunCode_window(root, algorithm, start_node_str, goal_node_str):
     center_window(new_win)
 
     # Khung Chính
-    lbl = ctk.CTkLabel(new_win, text=f"{algorithm} - Từ {start_node} đến {goal_node}", font=ctk.CTkFont("Arial", size=20, weight="bold"))
+    lbl = ctk.CTkLabel(new_win, text=f"{root.algorithm} - Từ {start_node} đến {goal_node}", font=ctk.CTkFont("Arial", size=20, weight="bold"))
     lbl.pack(pady=10)
 
     # Khung Đồ thị và Điều khiển
@@ -104,7 +106,7 @@ def RunCode_window(root, algorithm, start_node_str, goal_node_str):
     # Textbox Log
     log_textbox = ctk.CTkTextbox(control_frame, font=("Consolas", 12))
     log_textbox.pack(padx=10, fill="both", expand=True)
-    log_textbox.insert("0.0", f"--- Bắt đầu trực quan hóa {algorithm} ---\n")
+    log_textbox.insert("0.0", f"--- Bắt đầu trực quan hóa {root.algorithm} ---\n")
     log_textbox.configure(state="disabled")
 
     step_label = ctk.CTkLabel(control_frame,text='', font=("Segoe UI", 14, "bold"), text_color="#1E90FF")
@@ -119,16 +121,19 @@ def RunCode_window(root, algorithm, start_node_str, goal_node_str):
     # chạy thuật toán
     history = None; current_step_index = -1; total_steps = 0
     try:
-        if algorithm == "BFS":
+        if root.algorithm == "BFS":
             history, path = BFS_Algorithm(start_node, goal_node) 
             total_steps = len(history)
-            add_log(f"--- Thuật toán {algorithm} đã chạy xong ({total_steps} bước).")
-            add_log(f"Đường đi tìm được: {path if path else 'KHÔNG TÌM THẤY'}")
+            add_log(root.txtboxtHistory, f"--- Thuật toán {root.algorithm} đã chạy xong ({total_steps} bước).")
+            add_log(root.txtboxtHistory, f"Đường đi tìm được: {path if path else 'KHÔNG TÌM THẤY'}")
+
+            add_log(log_textbox, f"--- Thuật toán {root.algorithm} đã chạy xong ({total_steps} bước).")
+            add_log(log_textbox, f"Đường đi tìm được: {path if path else 'KHÔNG TÌM THẤY'}")
         else:
-            add_log(f"Lỗi: Thuật toán {algorithm} chưa được triển khai.")
-            
+            add_log(log_textbox, f"Lỗi: Thuật toán {root.algorithm} chưa được triển khai.")
+
     except Exception as e:
-        add_log(f"LỖI HỆ THỐNG: {e}")
+        add_log(log_textbox, f"LỖI HỆ THỐNG: {e}")
     
     for step in history:
         next_step()  # tự động tiến đến bước cuối cùng để hiển thị kết quả ngay
