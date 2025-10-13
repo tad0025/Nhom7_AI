@@ -54,7 +54,7 @@ def BFS_Algorithm(start_node, goal_node):
                 
                 # Thêm bước: Node mới được đưa vào queue (ADDED_TO_QUEUE)
                 history.append({
-                    'status': 'ADDED_TO_QUEUE',
+                    'status': 'ADDED TO QUEUE',
                     'current_node': current_node,
                     'processing_node': neighbor, 
                     'queue': list(queue),
