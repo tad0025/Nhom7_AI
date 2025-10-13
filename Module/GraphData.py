@@ -1,19 +1,10 @@
 import random
-from typing import List, Tuple, Dict, Any
-
-# ====================================================================
-# # Cấu hình Phạm vi Ngẫu nhiên
-# ====================================================================
-
+from typing import List, Tuple, Dict
 MIN_NODE_WEIGHT: int = 10
 MAX_NODE_WEIGHT: int = 100
 MIN_EDGE_COST: int = 10
 MAX_EDGE_COST: int = 90
-DEFAULT_EDGE_COST: int = 55 # Chi phí mặc định nếu không tìm thấy trong dict ngẫu nhiên
-
-# ====================================================================
-# # Dữ liệu Cố định (Cấu trúc đồ thị gốc)
-# ====================================================================
+DEFAULT_EDGE_COST: int = 55
 
 # Vị trí (Tọa độ cố định cho 5 nút, dùng cho UI)
 ORIGINAL_POSITIONS: List[Tuple[int, int]] = [
@@ -25,18 +16,14 @@ NUM_NODES: int = len(ORIGINAL_POSITIONS)
 # Các cạnh (Liên kết cố định)
 ORIGINAL_EDGES: List[Tuple[int, int]] = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
 
-# ====================================================================
-# # Hàm Tạo Dữ liệu Ngẫu nhiên
-# ====================================================================
-
-def _generate_random_node_weights(num_nodes: int) -> Dict[int, int]:
+def generate_random_node_weights(num_nodes: int) -> Dict[int, int]:
     """Tạo ngẫu nhiên trọng số cho tất cả các đỉnh."""
     weights = {}
     for i in range(num_nodes):
         weights[i] = random.randint(MIN_NODE_WEIGHT, MAX_NODE_WEIGHT)
     return weights
 
-def _generate_random_edge_costs(edges: List[Tuple[int, int]]) -> Dict[Tuple[int, int], int]:
+def generate_random_edge_costs(edges: List[Tuple[int, int]]) -> Dict[Tuple[int, int], int]:
     """Tạo ngẫu nhiên chi phí cho các cạnh gốc."""
     costs = {}
     for u, v in edges:
@@ -45,28 +32,15 @@ def _generate_random_edge_costs(edges: List[Tuple[int, int]]) -> Dict[Tuple[int,
         costs[key] = random.randint(MIN_EDGE_COST, MAX_EDGE_COST)
     return costs
 
-# ====================================================================
-# **KHỞI TẠO DỮ LIỆU NGẪU NHIÊN (BÊN NGOÀI HÀM get_graph_data)**
 # Dữ liệu này được tạo MỘT LẦN khi chương trình khởi động.
-# ====================================================================
-RANDOM_NODE_WEIGHTS: Dict[int, int] = _generate_random_node_weights(NUM_NODES)
-RANDOM_EDGE_COSTS: Dict[Tuple[int, int], int] = _generate_random_edge_costs(ORIGINAL_EDGES)
-
-# ====================================================================
-# # Hàm Chính
-# ====================================================================
+RANDOM_NODE_WEIGHTS: Dict[int, int] = generate_random_node_weights(NUM_NODES)
+RANDOM_EDGE_COSTS: Dict[Tuple[int, int], int] = generate_random_edge_costs(ORIGINAL_EDGES)
 
 def get_graph_data(random = False) -> Tuple[Dict[int, List[Tuple[int, int]]], Dict[int, int], List[Tuple[int, int]], List[Tuple[int, int]]]:
-    """
-    Trả về toàn bộ cấu trúc dữ liệu cần thiết cho cả Thuật toán và UI.
-    Sử dụng trọng số và chi phí ngẫu nhiên đã được tạo sẵn bên ngoài hàm.
-    
-    Trả về: (adj_list, node_weights, original_positions, original_edges)
-    """
     global RANDOM_NODE_WEIGHTS, RANDOM_EDGE_COSTS
     if random:
-        RANDOM_NODE_WEIGHTS = _generate_random_node_weights(NUM_NODES)
-        RANDOM_EDGE_COSTS = _generate_random_edge_costs(ORIGINAL_EDGES)
+        RANDOM_NODE_WEIGHTS = generate_random_node_weights(NUM_NODES)
+        RANDOM_EDGE_COSTS = generate_random_edge_costs(ORIGINAL_EDGES)
 
     adj: Dict[int, List[Tuple[int, int]]] = {}
     node_weights: Dict[int, int] = {}

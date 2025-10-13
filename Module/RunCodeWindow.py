@@ -22,7 +22,7 @@ def RunCode_window(root):
         step_data = history[current_step_index]
         
         # 1. Cập nhật Đồ thị
-        # graph_app.update_visualization(step_data) 
+        graph_app.update_visualization(step_data) 
         
         # 2. Cập nhật Label trạng thái
         step_label.configure(text=f"Bước: {current_step_index + 1} / {total_steps}")
@@ -126,7 +126,7 @@ def RunCode_window(root):
     for step in history:
         next_step()  # tự động tiến đến bước cuối cùng để hiển thị kết quả ngay
         new_win.update()
-        new_win.after(50)
+        new_win.after(200)
 
     # Close
     def close_window():

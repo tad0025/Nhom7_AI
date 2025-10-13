@@ -8,11 +8,11 @@ class GraphApp:
         self.canvas = tk.Canvas(root, bg='white', highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
+        # Lấy toàn bộ 4 phần dữ liệu từ GraphData
+        self.adj_list, self.node_weights, self.original_positions, self.original_edges = get_graph_data(random)
+
         self.nodes_draw_items = {} 
         self.edges_draw_items = {} 
-        
-        # ** Lấy toàn bộ 4 phần dữ liệu từ GraphData
-        self.adj_list, self.node_weights, self.original_positions, self.original_edges = get_graph_data(random)
         
         self.node_id_counter = 0
         self.edge_id_counter = 0
@@ -20,8 +20,6 @@ class GraphApp:
         self.start_node_id = None
         self.goal_node_id = None
         self.final_path = [] # Biến lưu đường đi cuối cùng cho bước END
-
-        self.canvas.bind("<Configure>", self.center_and_redraw_graph)
         
     def highlight_nodes(self, start_id=None, goal_id=None):
         """Dùng cho cửa sổ chính (Middle Pane) để highlight Start/Goal khi nhập"""
@@ -30,71 +28,27 @@ class GraphApp:
         self.final_path = [] 
         self.center_and_redraw_graph() 
         
-    # ** ĐÃ SỬA CHUẨN: Dùng tham số final_path **
-    def get_node_color(self, node_id, visited, processing_node, final_path):
+    def get_node_color(self, node_id, path):
         """Xác định màu nền của Node dựa trên trạng thái hiện tại."""
         if node_id == self.start_node_id:
             return "#008000"  # Xanh lá (START)
         if node_id == self.goal_node_id:
             return "gold"     # Vàng (GOAL)
-        if node_id in final_path:
+        if node_id in path:
             return "#FF69B4"  # Hot Pink (FINAL PATH)
-        if node_id == processing_node:
-            return "#4A90E2"  # Xanh Dương (CURRENT/PROCESSING)
-        if node_id in visited:
-            return "#ADD8E6"  # Xanh Nhạt (VISITED)
         return "white" # Mặc định
 
-    # Trong Class GraphApp (Module/GraphVisualizer.py)
+    def get_edge_color(self, u, v, path):
+        for i in range(1, len(path)):
+            if {u, v} == {path[i-1], path[i]}:
+                return "red"
+        return "gray"
 
-    def get_edge_color(self, u, v, path_edge, final_path): 
-        """Xác định màu cạnh dựa trên trạng thái hiện tại."""
+    def update_visualization(self, path):
+        path = path.split(' → '); path[-1] = path[-1].split(' ')[0]
+        path = list(map(int, path))
+        if not path: return
         
-        edge_key = tuple(sorted((u, v)))
-        
-        # 1. Cạnh đang xét (ƯU TIÊN VẼ MÀU ĐỎ LÊN TRÊN)
-        if path_edge and tuple(sorted(path_edge)) == edge_key:
-            return "red" 
-        
-        # 2. Đường đi cuối cùng (MÀU HỒNG)
-        if final_path: 
-            try:
-                index_u = final_path.index(u)
-                index_v = final_path.index(v)
-                
-                # Cạnh phải liên kết hai node liền kề trong đường đi
-                if abs(index_u - index_v) == 1:
-                    return "#FF69B4" # Hot Pink
-            except ValueError:
-                pass 
-                
-        return "gray" # Mặc định
-
-    def update_visualization(self, step_data):
-        """Hàm chính nhận trạng thái từ BFS và cập nhật đồ thị."""
-        if not step_data: return
-        
-        visited = step_data.get('visited', [])
-        processing_node = step_data.get('processing_node', None)
-        path_edge = step_data.get('path_edge', None)
-        status = step_data.get('status', 'N/A')
-        
-        if status == 'END':
-            self.final_path = step_data.get('path', [])
-        else:
-            self.final_path = [] 
-
-        # ** Gọi vẽ lại với toàn bộ trạng thái hiện tại, bao gồm self.final_path **
-        self.center_and_redraw_graph(
-            visited=visited,
-            processing_node=processing_node,
-            path_edge=path_edge,
-            final_path=self.final_path 
-        )
-
-
-    def center_and_redraw_graph(self, event=None, visited=[], processing_node=None, path_edge=None, final_path=[]):
-        """Vẽ lại đồ thị, có tính đến trạng thái tô màu"""
         self.canvas.delete("all")
         self.nodes_draw_items = {}
         self.edges_draw_items = {}
@@ -107,7 +61,6 @@ class GraphApp:
         if canvas_width <= 1 or canvas_height <= 1 or not self.original_positions:
             return
 
-        # (Phần tính toán offset giữ nguyên)
         min_x = min(p[0] for p in self.original_positions)
         max_x = max(p[0] for p in self.original_positions)
         min_y = min(p[1] for p in self.original_positions)
@@ -123,25 +76,18 @@ class GraphApp:
         
         # 1. Vẽ các Node
         for i, (x, y) in enumerate(self.original_positions):
-            # ** Truyền tham số final_path **
-            fill_color = self.get_node_color(i, visited, processing_node, final_path) 
+            fill_color = self.get_node_color(i, path) 
             weight = self.node_weights.get(i, 99)
-            
             self.create_node(x + offset_x, y + offset_y, node_id=i, weight=weight, fill_color=fill_color)
 
         # 2. Vẽ các Edge
         for u, v in self.original_edges:
             cost = next((c for n, c in self.adj_list.get(u, []) if n == v), 55) 
-            
-            # ** TRUYỀN THAM SỐ final_path vào get_edge_color **
-            edge_color = self.get_edge_color(u, v, path_edge, final_path) 
-            
+            edge_color = self.get_edge_color(u, v, path) 
             self.create_edge(u, v, cost=cost, edge_color=edge_color)
-
 
     def create_node(self, x, y, node_id, weight=99, fill_color="white"): 
         r = 25
-        
         circle = self.canvas.create_oval(x-r, y-r, x+r, y+r, outline="black", fill=fill_color) 
 
         # thân nhà
@@ -174,7 +120,6 @@ class GraphApp:
         self.node_id_counter += 1
 
     def circle_intersection(self, x1, y1, x2, y2, cx, cy, r):
-        # (Hàm giữ nguyên)
         dx, dy = x2 - x1, y2 - y1
         fx, fy = x1 - cx, y1 - cy
 
@@ -206,7 +151,6 @@ class GraphApp:
     
         edge_item = self.canvas.create_line(p1[0], p1[1], p2[0], p2[1], width=6, fill=edge_color) 
     
-        # (Các phần vẽ biển báo giữ nguyên)
         mid_x = (p1[0] + p2[0]) / 2
         mid_y = (p1[1] + p2[1]) / 2
     
