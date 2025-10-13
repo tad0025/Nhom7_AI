@@ -5,6 +5,7 @@ from Module.GraphVisualizer import GraphApp
 from Module.GraphData import get_graph_data
 from Module.UninformedSearch import *
 from Module.IninformedSearch import *
+from Module.LocalSearch import *
 
 def add_log(log_textbox, message):
         log_textbox.configure(state="normal")
@@ -103,7 +104,8 @@ def RunCode_window(root):
     alo_func = {
         "DFS": dfs,
         "IDS": ids,
-        "A*": ASSearch
+        "A*": ASSearch,
+        "Hill Climbing": HC
     }
     history = None; current_step_index = -1; total_steps = 0
     try:

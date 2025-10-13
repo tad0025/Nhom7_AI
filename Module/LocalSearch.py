@@ -3,38 +3,34 @@ import itertools
 import math
 from random import random
 
-# ------------------- CÁC HÀM THUẬT TOÁN -------------------
 def heuristic(node, goal, positions):
     x1 ,y1 = positions[node]
     x2 ,y2 = positions[goal]
 
     return((x1 - x2)**2 + (y1 - y2)**2)**0.5
-def HC(graph, start_node, goal_node):
-
+def HC(graph, start_node, goal_node, positions):
     cur = start_node
     path = [cur]
-
+    history = [f"{cur} (Heuristic: {heuristic(cur, goal_node, positions)})"]
     while True:
         neighbors = [n for (n, cost) in graph[cur]]
 
-        if not neighbors:
-            break
+        if not neighbors: break
         
         next = min(neighbors, key= lambda n: heuristic(n,goal_node,positions))
 
-        if heuristic(next, goal_node, path) >= heuristic(cur,goal_node,positions):
-            break
+        if heuristic(next, goal_node, positions) >= heuristic(cur, goal_node, positions): break
 
         cur = next
         path.append(cur)
+        history.append(' → '.join(map(str, path)) + f' (Heuristic: {heuristic(cur, goal_node, positions)})')
 
-        if cur == goal_node:
-            break
+        if cur == goal_node: break
 
-    return path
+    return history[-1] if cur == goal_node else 'KHÔNG TÌM THẤY', history
     
 class SA:
-    def __init__(self, graph, start_node, goal_node):
+    def __init__(self, graph, start_node, goal_node, positions):
         current = start_node
         T = 100; alpha = 0.99
         for t in itertools.count(1):
@@ -49,35 +45,3 @@ class SA:
                 if random.random() < probability:
                     current = next_node
             T *= alpha
-    
-# ------------------- HÀM ĐIỀU PHỐI VÀ LẤY CODE -------------------
-
-# Dictionary để ánh xạ tên thuật toán (string) với hàm tương ứng
-ALGORITHMS = {
-    "Hill climbing": HC,
-    "Simulated Annealing": SA
-}
-
-def run_algorithm(root, name, graph, start, goal):
-    """
-    Hàm điều phối: gọi hàm thuật toán tương ứng dựa vào tên.
-    """
-    
-    # Lấy hàm từ dictionary và gọi nó
-    algorithm_func = ALGORITHMS[name]
-    
-    # Xử lý các trường hợp đặc biệt, ví dụ DLS cần thêm tham số `depth_limit`
-    if name == "DLS":
-        # (Bạn cần lấy `depth_limit` từ giao diện người dùng)
-        return algorithm_func(root, graph, start, goal, depth_limit=10) 
-    else:
-        return algorithm_func(root, graph, start, goal)
-
-
-def get_code():
-    """
-    Hàm này trả về mã nguồn của toàn bộ file.
-    Cửa sổ ViewCode sẽ hiển thị toàn bộ file, người dùng có thể tự xem hàm mình cần.
-    """
-    with open(__file__, 'r', encoding='utf-8') as f:
-        return f.read()
