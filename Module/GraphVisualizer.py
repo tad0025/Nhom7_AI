@@ -64,29 +64,45 @@ class GraphApp:
         if canvas_width <= 1 or canvas_height <= 1 or not self.original_positions:
             return
 
+        # --- Tính toán kích thước gốc của đồ thị ---
         min_x = min(p[0] for p in self.original_positions)
         max_x = max(p[0] for p in self.original_positions)
         min_y = min(p[1] for p in self.original_positions)
         max_y = max(p[1] for p in self.original_positions)
 
+        graph_width = max_x - min_x
+        graph_height = max_y - min_y
+
+        # --- Tính hệ số thu nhỏ để vừa khung canvas ---
+        if graph_width == 0 or graph_height == 0:
+            scale = 1
+        else:
+            margin = 100  # khoảng cách lề
+            scale_x = (canvas_width - margin) / graph_width
+            scale_y = (canvas_height - margin) / graph_height
+            scale = min(scale_x, scale_y, 1.4)  # giới hạn phóng to tối đa
+
+        # --- Tính vị trí trung tâm ---
         graph_center_x = (min_x + max_x) / 2
         graph_center_y = (min_y + max_y) / 2
         canvas_center_x = canvas_width / 2
         canvas_center_y = canvas_height / 2
 
-        offset_x = canvas_center_x - graph_center_x
-        offset_y = canvas_center_y - graph_center_y
-        
-        # 1. Vẽ các Node
+        # --- Vẽ các node (đã scale + căn giữa) ---
+        scaled_positions = []
         for i, (x, y) in enumerate(self.original_positions):
-            fill_color = self.get_node_color(i, path) 
+            new_x = (x - graph_center_x) * scale + canvas_center_x
+            new_y = (y - graph_center_y) * scale + canvas_center_y
+            scaled_positions.append((new_x, new_y))
+            fill_color = self.get_node_color(i, path)
             weight = self.node_weights.get(i, 99)
-            self.create_node(x + offset_x, y + offset_y, node_id=i, weight=weight, fill_color=fill_color)
+            self.create_node(new_x, new_y, node_id=i, weight=weight, fill_color=fill_color)
 
-        # 2. Vẽ các Edge
+        # --- Vẽ các cạnh ---
         for u, v in self.original_edges:
-            cost = next((c for n, c in self.adj_list.get(u, []) if n == v), 55) 
-            edge_color = self.get_edge_color(u, v, path) 
+            cost = next((c for n, c in self.adj_list.get(u, []) if n == v), 55)
+            edge_color = self.get_edge_color(u, v, path)
+            # Dùng vị trí sau khi scale
             self.create_edge(u, v, cost=cost, edge_color=edge_color)
 
     def create_node(self, x, y, node_id, weight=99, fill_color="white"): 
