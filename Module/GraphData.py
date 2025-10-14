@@ -6,15 +6,21 @@ MIN_EDGE_COST: int = 10
 MAX_EDGE_COST: int = 90
 DEFAULT_EDGE_COST: int = 55
 
-# Vị trí (Tọa độ cố định cho 5 nút, dùng cho UI)
 ORIGINAL_POSITIONS: List[Tuple[int, int]] = [
-    (150, 150), (350, 150), (550, 150),
-    (250, 350), (450, 350)
+    (50, 50), (162, 50), (274, 50), (386, 50), (498, 50), (610, 50),
+    (50, 200), (162, 200), (274, 200), (386, 200), (498, 200), (610, 200),
+    (50, 350), (162, 350), (274, 350), (386, 350), (498, 350), (610, 350)
 ]
+
 NUM_NODES: int = len(ORIGINAL_POSITIONS)
 
-# Các cạnh (Liên kết cố định)
-ORIGINAL_EDGES: List[Tuple[int, int]] = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
+ORIGINAL_EDGES: List[Tuple[int, int]] = [
+    (0, 1), (3, 4), (4, 5), (0, 6),
+    (6, 7), (7, 8), (8, 9), (9, 10), (10, 11),
+    (12, 13), (13, 14), (15, 16), (16, 17),
+    (0, 7), (2, 7), (2, 9), (3, 10), (4, 11),
+    (6, 13), (7, 14), (8, 15), (10, 15), (10, 17)
+]
 
 def generate_random_node_weights(num_nodes: int) -> Dict[int, int]:
     """Tạo ngẫu nhiên trọng số cho tất cả các đỉnh."""

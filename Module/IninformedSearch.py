@@ -44,3 +44,48 @@ def ASSearch(graph, start_node, goal_node, positions):
             heappush(pq, (f_child, g_child, neighbor))
 
     return 'KHÔNG TÌM THẤY', history
+
+def GreedySearch(graph, start_node, goal_node, positions):
+    pq = [] 
+    history = []
+    
+    h_start = heuristic(start_node, goal_node, positions)
+
+    heappush(pq, (h_start, start_node)) 
+
+    came_from = {}
+    came_from[start_node] = None 
+    closed = set()
+    
+    while pq:
+        h_curr, node = heappop(pq) 
+
+        if node in closed: continue
+
+        path = []
+        k = node
+        while k in came_from:
+            path.append(k)
+            k = came_from[k]
+        path.append(start_node)
+        path.reverse()
+        
+        history.append(' → '.join(map(str, path)) + f' [H(n): {h_curr:.4f}]') 
+        
+        if node == goal_node:
+            solution = ' → '.join(map(str, path))
+            return solution, history
+        
+        closed.add(node)
+
+        for neighbor, step_cost in graph.get(node, []):
+            
+            if neighbor in closed:
+                continue
+            
+            h_child = heuristic(neighbor, goal_node, positions)
+            if neighbor not in came_from:
+                 came_from[neighbor] = node
+                 heappush(pq, (h_child, neighbor)) 
+
+    return 'KHÔNG TÌM THẤY', history

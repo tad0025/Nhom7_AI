@@ -1,3 +1,5 @@
+from collections import deque
+
 def dfs(graph, start_node, goal_node, positions):
     v = []; history = []
     solution = None
@@ -44,3 +46,36 @@ def ids(graph, start_node, goal_node, positions):
         depth += 1
 
     return ' → '.join(map(str, solution)) + f" (depth: {depth})" if solution else 'KHÔNG TÌM THẤY', history
+
+def BFS(graph, start_node, goal_node, positions):
+    queue = deque([start_node]) 
+    history = []
+    
+    visited = {start_node}
+    
+    came_from = {start_node: None}
+
+    while queue:
+        node = queue.popleft() 
+        path = []
+        k = node
+        while k is not None:
+            path.append(k)
+            k = came_from.get(k)
+        path.reverse()
+        
+        history.append(' → '.join(map(str, path))) 
+        
+        if node == goal_node:
+            solution = ' → '.join(map(str, path))
+            return solution, history
+        
+        for neighbor, _ in graph.get(node, []):
+            
+            if neighbor not in visited:
+                visited.add(neighbor)
+                came_from[neighbor] = node
+                
+                queue.append(neighbor) 
+
+    return 'KHÔNG TÌM THẤY', history

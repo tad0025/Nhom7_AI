@@ -107,7 +107,9 @@ def RunCode_window(root):
         "IDS": ids,
         "A*": ASSearch,
         "Hill Climbing": HC,
-        "Belief State Search": belief_Search
+        "Belief State Search": belief_Search,
+        "BFS": BFS,
+        "Greedy": GreedySearch
     }
     history = None; current_step_index = -1; total_steps = 0
     try:
@@ -129,7 +131,7 @@ def RunCode_window(root):
             current_step_index = step_index
             next_step()
             new_win.update()
-            new_win.after(200, lambda: auto_run_steps(step_index + 1))
+            new_win.after(500, lambda: auto_run_steps(step_index + 1))
     if history: auto_run_steps()
 
     # Close
