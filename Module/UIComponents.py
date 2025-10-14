@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from Module.GraphVisualizer import GraphApp
+from Module.GraphData import get_graph_data
 from Module.RunCodeWindow import RunCode_window
 from Module.ViewCodeWindow import ViewCode_window
 
@@ -177,18 +178,25 @@ def create_middle_pane(root):
         return root.algorithm_var.get()
     
     def run_algorithm(root):
+        nodes, node_weights, positions, edges = get_graph_data()
         root.algorithm = get_selected_algorithm()
         if root.algorithm == "Chưa chọn thuật toán":
             messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi chạy!")
-        else:
-            RunCode_window(root)
+            return
+        elif not root.TxtboxStartNode.get().isdigit() or not root.TxtboxGoalNode.get().isdigit():
+            messagebox.showwarning("Cảnh báo", "Hãy nhập đúng định dạng Node (số nguyên)!")
+            return
+        elif int(root.TxtboxStartNode.get()) not in node_weights or int(root.TxtboxGoalNode.get()) not in node_weights:
+            messagebox.showwarning("Cảnh báo", f"Node bắt đầu hoặc Node kết thúc không tồn tại trong đồ thị! (0 đến {len(node_weights)-1})")
+            return
+        RunCode_window(root)
 
     def view_code(root):
         root.algorithm = get_selected_algorithm()
         if root.algorithm == "Chưa chọn thuật toán":
             messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi xem code!")
-        else:
-            ViewCode_window(root, root.algorithm)
+            return
+        ViewCode_window(root, root.algorithm)
 
     btnRun = ctk.CTkButton(btn_frame, text="Run Algorithm", width=160, fg_color="#4A90E2", hover_color="#357ABD", command=lambda: run_algorithm(root))
     btnRun.pack(side="left", padx=10)

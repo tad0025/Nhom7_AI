@@ -4,7 +4,7 @@ from Module.CenterWindow import center_window
 from Module.GraphVisualizer import GraphApp
 from Module.GraphData import get_graph_data
 from Module.UninformedSearch import *
-from Module.IninformedSearch import *
+from Module.InformedSearch import *
 from Module.LocalSearch import *
 from Module.ComplexEvniroment import *
 
@@ -125,7 +125,7 @@ def RunCode_window(root):
     except Exception as e:
         add_log(log_textbox, f"LỖI HỆ THỐNG: {e}")
     
-    def auto_run_steps(step_index=0):
+    def auto_run_steps(step_index=-1):
         nonlocal current_step_index
         if step_index < total_steps:
             current_step_index = step_index
