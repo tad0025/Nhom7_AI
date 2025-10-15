@@ -1,15 +1,11 @@
 # README NHÓM 07
 **Nhóm thực hiện:** 07
 
-**Thành viên:** Nguyễn Sư Thành Đạt  
-**Mã số sinh viên:** 23110089
-
-**Thành viên:** Trịnh Đại Nghĩa  
-**Mã số sinh viên:** 23110131
-
-**Thành viên:** Trần Huỳnh Chí Nguyên  
-**Mã số sinh viên:** 23110136
-
+| STT | Họ và tên             | Mã số sinh viên |
+|-----|------------------------|-----------------|
+| 1   | Nguyễn Sư Thành Đạt    | 23110089        |
+| 2   | Trịnh Đại Nghĩa        | 23110131        |
+| 3   | Trần Huỳnh Chí Nguyên  | 23110136        |
 
 **Môn học/lớp:** Trí tuệ Nhân tạo/ARIN330585_05CLC
 
