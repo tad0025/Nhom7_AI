@@ -1,8 +1,7 @@
 # README NHÓM 07
 **Nhóm thực hiện:** 07
 
-**Thành viên:** Nguyễn Sư Thành Đạt
-   **Mã số sinh viên:** 23110131
+**Thành viên:** Nguyễn Sư Thành Đạt  **Mã số sinh viên:** 23110131
 
 **Thành viên:** Trịnh Đại Nghĩa
 **Mã số sinh viên:** 23110131
