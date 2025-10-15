@@ -124,7 +124,7 @@ def RunCode_window(root):
     try:
         func = alo_func.get(root.algorithm)
         solution, history = func(graph, start_node, goal_node, positions)
-        total_steps = len(history)
+        total_steps = len(history); print(history)
         add_log(root.txtboxtHistory, f"Thuật toán {root.algorithm} đã chạy xong ({total_steps} bước)")
         add_log(root.txtboxtHistory, f"Đường đi tìm được: {solution}")
 

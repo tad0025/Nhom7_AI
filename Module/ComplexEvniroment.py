@@ -171,67 +171,49 @@ def belief_Search(graph, start_node, goal_node, positions):
 
 def Partially_Observable(graph, start_node, goal_node, positions):
     """
-    Thực hiện tìm kiếm trong không gian trạng thái niềm tin (belief state space).
-    Đường đi trực quan (path) chỉ là một đại diện cho quá trình tìm kiếm này.
+    Thực hiện tìm kiếm trong không gian trạng thái niềm tin (belief state space)
+    bằng phương pháp giống BFS.
     """
-    # Trạng thái niềm tin ban đầu
     initial_belief_state = frozenset([start_node])
-    
-    # Hàng đợi ưu tiên chứa: (trạng thái niềm tin, đường đi trực quan)
     frontier = deque([(initial_belief_state, [start_node])])
-    
-    # Set để lưu các trạng thái niềm tin đã duyệt, tránh lặp vô hạn
     visited_belief_states = {initial_belief_state}
     history = []
 
     while frontier:
         current_belief, path = frontier.popleft()
 
-        # Biểu diễn trạng thái niềm tin và thêm vào history
         belief_str = "{" + ", ".join(map(str, sorted(list(current_belief)))) + "}"
         history.append(f"{' → '.join(map(str, path))} (Belief: {belief_str})")
 
-        # Điều kiện dừng: Nếu mục tiêu nằm trong tập hợp các trạng thái có thể
         if goal_node in current_belief:
             solution_path = ' → '.join(map(str, path))
-            # Đảm bảo node đích được hiển thị ở cuối đường đi trực quan
+            # Đảm bảo node đích được hiển thị ở cuối nếu nó chưa có trong đường đi trực quan
             if path[-1] != goal_node:
-                solution_path += f" → {goal_node}"
+                final_path_nodes = path + [goal_node]
+                solution_path = ' → '.join(map(str, final_path_nodes))
             
             history[-1] = f"{solution_path} [GOAL FOUND]"
             return solution_path, history
 
-        # Tính toán trạng thái niềm tin kế tiếp: tập hợp tất cả hàng xóm
-        successor_nodes = belief_successors_cost(current_belief, graph)
-        if not successor_nodes:
+        # Lấy TẤT CẢ các hàng xóm có thể có từ tập niềm tin hiện tại
+        all_possible_successors = belief_successors_cost(current_belief, graph)
+        if not all_possible_successors:
             continue
 
-        successor_belief = frozenset(successor_nodes)
+        # Lấy các node hành động duy nhất (mỗi node là một "hành động" có thể)
+        possible_actions = set(n for n, c in all_possible_successors)
 
-        # Chỉ khám phá nếu đây là một trạng thái niềm tin mới
-        if successor_belief not in visited_belief_states:
-            visited_belief_states.add(successor_belief)
-            
-            # =================================================================
-            # === LOGIC CHỌN NODE ĐẠI DIỆN THÔNG MINH HƠN ===
-            # 1. Ưu tiên node mới chưa từng có trong đường đi (path).
-            # 2. Nếu không có, chọn node bất kỳ miễn không phải node vừa đi qua.
-            # 3. Nếu vẫn không có, đành phải chọn node nhỏ nhất.
-            # =================================================================
-            unvisited_successors = sorted([n for n in successor_belief if n not in path])
-            
-            if unvisited_successors:
-                representative_node = unvisited_successors[0]
-            else:
-                # Tránh đi lùi lại ngay lập tức nếu có thể
-                non_repeating_successors = sorted([n for n in successor_belief if n != path[-1]])
-                if non_repeating_successors:
-                    representative_node = non_repeating_successors[0]
-                else:
-                    # Trường hợp xấu nhất: tất cả hàng xóm đều là node vừa đi qua
-                    representative_node = sorted(list(successor_belief))[0]
+        # *** SỬA LỖI LOGIC: TẠO NHÁNH CHO TỪNG HÀNH ĐỘNG ***
+        for action_node in possible_actions:
+            # Trạng thái niềm tin mới là tập hợp cũ cộng với node hành động
+            new_belief = frozenset(current_belief | {action_node})
 
-            new_path = path + [representative_node]
-            frontier.append((successor_belief, new_path))
+            # Chỉ khám phá nếu đây là một trạng thái niềm tin mới
+            if new_belief not in visited_belief_states:
+                visited_belief_states.add(new_belief)
+                
+                # Đường đi trực quan mới sẽ bao gồm node hành động này
+                new_path = path + [action_node]
+                frontier.append((new_belief, new_path))
 
     return 'KHÔNG TÌM THẤY', history

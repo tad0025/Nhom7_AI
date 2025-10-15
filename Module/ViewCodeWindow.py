@@ -32,11 +32,12 @@ def ViewCode_window(root, algorithm):
         "Hill Climbing": HC,
         "Simulated Annealing": SA,
         "Genetic": Genetic,
+        "And-OR Search": And_Or,
         "Belief State Search": belief_Search,
         "Partially Observable Search": Partially_Observable,
         "BFS": BFS,
         "Greedy": GreedySearch,
-        "Backtracking": BacktrackingSearch,
+        "Bactracking": BacktrackingSearch,
         "Forward-Checking": FCSearch,
         "AC3": AC3Search
     }
