@@ -34,9 +34,6 @@ def BacktrackingSearch(graph, start_node, goal_node, positions):
     
 # =================================================================
 def revise(domains, i, j):
-    """
-    Hàm helper cho AC-3. Trả về True nếu miền giá trị của i được sửa đổi.
-    """
     revised = False
     for x in domains[i][:]: # Lặp trên một bản sao của domains[i]
         # Nếu không có giá trị y nào trong domains[j] thỏa mãn ràng buộc với x
@@ -46,9 +43,6 @@ def revise(domains, i, j):
     return revised
 
 def ac3(graph, positions):
-    """
-    Thuật toán AC-3 để thực thi tính nhất quán cung (arc consistency).
-    """
     # Khởi tạo domains: mỗi node có thể đi đến các hàng xóm của nó
     domains = {node: [n for n, c in neighbors] for node, neighbors in graph.items()}
     
