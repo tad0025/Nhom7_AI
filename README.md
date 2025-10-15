@@ -150,24 +150,25 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **A\* Search**
 
+    ![AStar](./GIF/AStar.gif)
       * **Đặc trưng:** Là thuật toán tìm kiếm nổi tiếng nhất. Nó cân bằng giữa chi phí thực tế đã đi `g(n)` và chi phí ước tính đến đích `h(n)`. Node được ưu tiên mở rộng là node có tổng `f(n) = g(n) + h(n)` nhỏ nhất. Việc triển khai sử dụng hàng đợi ưu tiên để lưu trữ các tuple `(f_score, g_score, node)`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có, với điều kiện hàm heuristic là "chấp nhận được" (admissible), tức là không bao giờ đánh giá cao hơn chi phí thực tế. Khoảng cách Euclid là một heuristic chấp nhận được. A\* được xem là thuật toán tối ưu nhất trong số các thuật toán tìm kiếm có thông tin.
 
   * **Uniform Cost Search (UCS)**
 
+    ![UCS](./GIF/UCS.gif)
       * **Đặc trưng:** Có thể xem là một trường hợp đặc biệt của A\* với `h(n) = 0`. Nó luôn mở rộng node có tổng chi phí đường đi `g(n)` thấp nhất tính từ điểm xuất phát. Về bản chất, nó chính là thuật toán Dijkstra. Code triển khai sử dụng hàng đợi ưu tiên để sắp xếp các node theo `cost`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có. Nó luôn đảm bảo tìm được đường đi với tổng chi phí thấp nhất. Tuy nhiên, nó duyệt không có định hướng và có thể mở rộng nhiều node không cần thiết so với A\*.
 
 -----
 
-#### **3. Local Search (Tìm kiếm cục bộ)** ⛰️
-
-Các thuật toán này không quan tâm đến đường đi mà chỉ tập trung vào trạng thái hiện tại và cố gắng di chuyển đến một trạng thái tốt hơn, thường được áp dụng cho các bài toán tối ưu hóa.
+#### **3. Local Search (Tìm kiếm cục bộ)**
 
   * **Hill Climbing**
 
+    ![Hill](./GIF/Hill.gif)
       * **Đặc trưng:** Là một vòng lặp đơn giản, liên tục di chuyển theo hướng "dốc lên" (tức là đến node lân cận có giá trị heuristic tốt hơn). Nó sẽ dừng lại khi đến một "đỉnh" mà không có lân cận nào tốt hơn. Trong code, vòng lặp `while True` sẽ tìm `next` node là `min` của các hàng xóm dựa trên `heuristic` và sẽ `break` nếu `heuristic` của `next` không tốt hơn `cur`.
       * **Phân tích và đánh giá:**
           * **Nhược điểm:** Rất dễ bị kẹt ở "cực đại địa phương" (local maxima), "bình nguyên" (plateau) hoặc "sườn núi" (ridge), dẫn đến không tìm được lời giải tối ưu toàn cục.
@@ -175,46 +176,52 @@ Các thuật toán này không quan tâm đến đường đi mà chỉ tập tr
 
   * **Simulated Annealing (Luyện kim mô phỏng)**
 
+    ![Simulated](./GIF/Simulated.gif)
       * **Đặc trưng:** Là một cải tiến của Hill Climbing. Nó cho phép thực hiện các bước đi "xấu hơn" (xuống dốc) với một xác suất nhất định, giúp thoát khỏi các cực đại địa phương. Xác suất này được kiểm soát bởi một tham số "nhiệt độ" (`T`), `T` sẽ giảm dần theo thời gian. Khi `T` cao, thuật toán khám phá rất ngẫu nhiên; khi `T` thấp, nó hoạt động giống Hill Climbing.
       * **Phân tích và đánh giá:**
           * **Ưu điểm:** Có khả năng tìm được lời giải tối ưu toàn cục cao hơn nhiều so với Hill Climbing nếu lịch trình "làm nguội" (cooling schedule) được chọn phù hợp.
 
   * **Genetic Algorithm (Thuật toán di truyền)**
 
+    ![Genetic](./GIF/Genetic.gif)
       * **Đặc trưng:** Mô phỏng quá trình tiến hóa của sinh vật. Nó duy trì một "quần thể" (population) các giải pháp (các đường đi). Qua mỗi "thế hệ" (generation), các giải pháp tốt nhất được chọn lọc, "lai ghép" (crossover) và "đột biến" (mutation) để tạo ra thế hệ mới có khả năng tốt hơn.
       * **Phân tích và đánh giá:**
           * **Ưu điểm:** Rất mạnh mẽ trong việc khám phá song song nhiều khu vực của không gian tìm kiếm, hiệu quả cho các bài toán tối ưu hóa phức tạp.
 
 -----
 
-#### **4. Complex Environment Search (Tìm kiếm trong môi trường phức tạp)** 🌍
+#### **4. Complex Environment Search (Tìm kiếm trong môi trường phức tạp)**
 
   * **And-OR Search**
 
+    ![And_Or](./GIF/And_Or.gif)
       * **Đặc trưng:** Được sử dụng cho các bài toán mà lời giải có thể được phân rã thành các bài toán con. Trong bản triển khai này, nó được "ngụy trang" thành một thuật toán DFS, trong đó việc chọn một nhánh để đi được xem là giải quyết một "OR-node" (chọn một trong nhiều cách), và việc đi từ node hiện tại đến node tiếp theo là một "AND-action" (phải thực hiện hành động này).
 
   * **Belief State Search**
 
+    ![Belief](./GIF/Belief.gif)
       * **Đặc trưng:** Áp dụng cho môi trường mà agent không chắc chắn 100% về vị trí hiện tại của mình. Nó tìm kiếm trong không gian của các "trạng thái niềm tin" (belief states), trong đó mỗi belief state là một tập hợp các node mà agent tin rằng mình có thể đang ở đó. Thuật toán sẽ mở rộng belief state bằng cách thêm vào các hàng xóm của tất cả các node trong belief state hiện tại.
 
   * **Partially Observable Search**
 
+    ![Partially_Observable](./GIF/Partially_Observable.gif)
       * **Đặc trưng:** Về cơ bản, đây là một cách tiếp cận khác cho bài toán tìm kiếm với belief state. Trong code, thuật toán này cũng duy trì một belief state và mở rộng nó. Mục tiêu là tìm một chuỗi hành động để dẫn đến một belief state có chứa node đích.
 
 -----
 
-#### **5. Constraint Satisfaction Problems (CSP - Bài toán thỏa mãn ràng buộc)** ✅
-
-Các thuật toán này không tìm đường đi mà tìm một bộ giá trị gán cho các biến sao cho tất cả các ràng buộc được thỏa mãn. Trong ngữ cảnh tìm đường, biến là các bước trong đường đi, và ràng buộc là không được tạo chu trình (không thăm lại node đã đi).
+#### **5. Constraint Satisfaction Problems (CSP - Bài toán thỏa mãn ràng buộc)**
 
   * **Backtracking Search**
 
+    ![Backtrack](./GIF/Backtrack.gif)
       * **Đặc trưng:** Là một thuật toán DFS cơ bản cho CSP. Nó thử gán giá trị cho từng biến. Nếu việc gán giá trị vi phạm ràng buộc, nó sẽ "quay lui" (backtrack) và thử giá trị khác. Ràng buộc chính trong hàm `backtrack` là `if neighbor not in path`, ngăn thuật toán đi vào một node đã có trong đường đi hiện tại.
 
   * **Forward-Checking**
 
+    ![Forward](./GIF/Forward.gif)
       * **Đặc trưng:** Là một phiên bản thông minh hơn của Backtracking. Mỗi khi một node được chọn (`next_n`), hàm `forwardcheck` sẽ tạo ra một `new_domains` (miền giá trị mới) cho các node còn lại bằng cách loại bỏ `next_n` khỏi danh sách hàng xóm của chúng. Điều này giúp phát hiện ra các nhánh tìm kiếm vô nghiệm sớm hơn nhiều.
 
   * **AC-3**
 
+    ![AC3](./GIF/AC3.gif)
       * **Đặc trưng:** Thuật toán này không phải là một thuật toán tìm kiếm hoàn chỉnh, mà là một công cụ tiền xử lý hoặc tích hợp vào tìm kiếm. Mục tiêu của nó là thực thi "tính nhất quán cung" (arc consistency). Nó loại bỏ các giá trị trong miền giá trị của một biến nếu không tồn tại giá trị tương ứng ở biến lân cận để thỏa mãn ràng buộc. Trong hàm `AC3Search`, đầu tiên `ac3` được chạy để "élagage" (cắt tỉa) đồ thị, sau đó `BacktrackingSearch` được chạy trên đồ thị đã được rút gọn đó, giúp tăng tốc độ tìm kiếm đáng kể.
