@@ -133,7 +133,7 @@ def And_Or(graph, start_node, goal_node, positions):
 def belief_successors(belief, graph):
     new_b = set()
     for state in belief:
-        neighbors = [n for n, cost in graph.get(state,[])]
+        neighbors = [n for n, cost in graph.get(state,[]) if n not in belief]
         for n in neighbors:
             new_b.add(n)
     return new_b
@@ -142,69 +142,90 @@ def belief_Search(graph, start_node, goal_node, positions):
     start = frozenset([start_node])
     frontier = deque([(start, [start_node])])
     v = set(); history = []
-    path_sofar = None
 
     while frontier:
-        curr_b , path_sofar= frontier.popleft()
-        if curr_b in v: continue
+        curr_b , path_sofar = frontier.popleft()
+        if curr_b in v:
+            continue
         v.add(curr_b)
 
-        history.append(' → '.join(map(str, path_sofar)))
+        log_line = f"{' → '.join(map(str, path_sofar))} Belief: {set(curr_b)}"
+        history.append(log_line)
+
         if goal_node in curr_b:
-            return history[-1], history
+            return f"Goal found in belief {set(curr_b)} via path: {' → '.join(map(str, path_sofar))}", history
 
         succ_b_node = belief_successors(curr_b, graph)
         if succ_b_node:
-            succ_b= frozenset(succ_b_node)
+            succ_b = frozenset(succ_b_node)
             if succ_b not in v: 
-                for n in succ_b:
-                    frontier.append((succ_b, path_sofar + [n]))
+                frontier.append((succ_b, path_sofar + [set(succ_b)]))
                 
-    return 'KHÔNG TÌM THẤY', history
+    return "KHÔNG TÌM THẤY", history
 
 def Partially_Observable(graph, start_node, goal_node, positions):
-    # Trạng thái niềm tin ban đầu chỉ chứa điểm bắt đầu
+    """
+    Thực hiện tìm kiếm trong không gian trạng thái niềm tin (belief state space).
+    Đường đi trực quan (path) chỉ là một đại diện cho quá trình tìm kiếm này.
+    """
+    # Trạng thái niềm tin ban đầu
     initial_belief_state = frozenset([start_node])
     
-    # Hàng đợi chứa các cặp (trạng thái niềm tin, đường đi)
+    # Hàng đợi ưu tiên chứa: (trạng thái niềm tin, đường đi trực quan)
     frontier = deque([(initial_belief_state, [start_node])])
     
-    # Lưu trữ các trạng thái niềm tin đã duyệt đ/ể tránh lặp
+    # Set để lưu các trạng thái niềm tin đã duyệt, tránh lặp vô hạn
     visited_belief_states = {initial_belief_state}
     history = []
 
     while frontier:
         current_belief, path = frontier.popleft()
 
-        # Biểu diễn trạng thái niềm tin dưới dạng chuỗi để ghi log
+        # Biểu diễn trạng thái niềm tin và thêm vào history
         belief_str = "{" + ", ".join(map(str, sorted(list(current_belief)))) + "}"
-        history.append(f"{' → '.join(map(str, path))} (Belief State: {belief_str})")
+        history.append(f"{' → '.join(map(str, path))} (Belief: {belief_str})")
 
-        # =======================================================
-        #  FIX: Sửa lại logic trả về kết quả khi tìm thấy đích
-        # =======================================================
+        # Điều kiện dừng: Nếu mục tiêu nằm trong tập hợp các trạng thái có thể
         if goal_node in current_belief:
-            # Tạo đường đi cuối cùng bằng cách nối đường đi hiện tại với node đích
-            final_path = path + [goal_node]
-            solution_path = ' → '.join(map(str, final_path))
+            solution_path = ' → '.join(map(str, path))
+            # Đảm bảo node đích được hiển thị ở cuối đường đi trực quan
+            if path[-1] != goal_node:
+                solution_path += f" → {goal_node}"
             
-            # Cập nhật lại bước cuối cùng trong history để hiển thị đúng
-            history[-1] = f"{' → '.join(map(str, path))} → {goal_node} (Belief State: {belief_str}) [GOAL FOUND]"
-            
+            history[-1] = f"{solution_path} [GOAL FOUND]"
             return solution_path, history
 
-        # Tìm trạng thái niềm tin tiếp theo
-        successor_belief_nodes = belief_successors(current_belief, graph)
-        
-        if successor_belief_nodes:
-            successor_belief = frozenset(successor_belief_nodes)
+        # Tính toán trạng thái niềm tin kế tiếp: tập hợp tất cả hàng xóm
+        successor_nodes = belief_successors(current_belief, graph)
+        if not successor_nodes:
+            continue
 
-            if successor_belief not in visited_belief_states:
-                visited_belief_states.add(successor_belief)
-                
-                # Chọn một node đại diện để thêm vào đường đi cho mục đích trực quan.
-                representative_node = sorted(list(successor_belief_nodes))[0]
-                new_path = path + [representative_node]
-                frontier.append((successor_belief, new_path))
+        successor_belief = frozenset(successor_nodes)
+
+        # Chỉ khám phá nếu đây là một trạng thái niềm tin mới
+        if successor_belief not in visited_belief_states:
+            visited_belief_states.add(successor_belief)
+            
+            # =================================================================
+            # === LOGIC CHỌN NODE ĐẠI DIỆN THÔNG MINH HƠN ===
+            # 1. Ưu tiên node mới chưa từng có trong đường đi (path).
+            # 2. Nếu không có, chọn node bất kỳ miễn không phải node vừa đi qua.
+            # 3. Nếu vẫn không có, đành phải chọn node nhỏ nhất.
+            # =================================================================
+            unvisited_successors = sorted([n for n in successor_belief if n not in path])
+            
+            if unvisited_successors:
+                representative_node = unvisited_successors[0]
+            else:
+                # Tránh đi lùi lại ngay lập tức nếu có thể
+                non_repeating_successors = sorted([n for n in successor_belief if n != path[-1]])
+                if non_repeating_successors:
+                    representative_node = non_repeating_successors[0]
+                else:
+                    # Trường hợp xấu nhất: tất cả hàng xóm đều là node vừa đi qua
+                    representative_node = sorted(list(successor_belief))[0]
+
+            new_path = path + [representative_node]
+            frontier.append((successor_belief, new_path))
 
     return 'KHÔNG TÌM THẤY', history

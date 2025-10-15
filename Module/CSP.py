@@ -110,8 +110,9 @@ def forwardcheck(domains, curr_node, next_n, path_cost, max_cost = None):
     return checeked_domains, new_path_cost
 
 def FCSearch(graph, start_node, goal_node, positions):
-    
+    history = []
     def backtrack(path_sofar, curr_node, domains, path_cost):
+        history.append(' → '.join(map(str, path_sofar)))
         if curr_node == goal_node:
             return path_sofar[:], path_cost
         
@@ -132,7 +133,6 @@ def FCSearch(graph, start_node, goal_node, positions):
     if sol:
         # Chuyển đổi kết quả để phù hợp với định dạng đầu ra chung
         path_str = ' → '.join(map(str, sol[0]))
-        history = [f"Found path with cost {sol[1]}"] # CSP không có history từng bước
-        return path_str, [path_str]
+        return path_str, history
     else:
         return "KHÔNG TÌM THẤY", []
