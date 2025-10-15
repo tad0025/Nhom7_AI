@@ -1,75 +1,132 @@
 import collections
 from collections import deque
 
+# def And_Or(graph, start_node, goal_node, positions):
+#     """
+#     Thực hiện thuật toán tìm kiếm AND-OR.
+#     Đồ thị cho thuật toán này có một cấu trúc đặc biệt.
+#     """
+#     history = []
+#     failed_states = set()
+
+#     def or_search(state, path):
+#         if state == goal_node:
+#             history.append(f"{' → '.join(map(str, path + [state]))} [GOAL!] Đạt được mục tiêu!")
+#             return []
+
+#         if state in path:
+#             history.append(f"{' → '.join(map(str, path + [state]))} Phát hiện chu trình. Quay lui.")
+#             return None
+
+#         if state == goal_node:
+#             history.append(f"{' → '.join(map(str, path + [state]))} [GOAL!] Đạt được mục tiêu!")
+#             return []
+
+#         if state in path:
+#             history.append(f"{' → '.join(map(str, path + [state]))} Phát hiện chu trình. Quay lui.")
+#             return None
+
+#         for action in graph.get(state, []):
+#             current_path_str = ' → '.join(map(str, path + [state]))
+#             history.append(f"{current_path_str} Thử hành động {action}")
+            
+#             plan = and_search(action, path + [state])
+            
+#             if plan is not None:
+#                 history.append(f"{current_path_str} Hành động {action} THÀNH CÔNG.")
+#                 return [(state, action)] + plan
+        
+#         # Nếu tất cả hành động đều thất bại, đánh dấu trạng thái này và quay lui
+#         history.append(f"{' → '.join(map(str, path + [state]))} Mọi hành động đều thất bại.")
+#         failed_states.add(state)
+#         return None
+
+#     def and_search(states, path):
+#         combined_plan = []
+#         for state in states:
+#             plan = or_search(state, path)
+            
+#             if plan is None:
+#                 # Ghi lại log khi một nhánh con của AND thất bại
+#                 history.append(f"{' → '.join(map(str, path))} Nhánh AND thất bại vì không thể giải quyết được state {state}.")
+#                 return None
+            
+#             combined_plan.extend(plan)
+#         return combined_plan
+
+#     # Đổi tên hàm thành And_Or_Search cho nhất quán
+#     solution_plan = or_search(start_node, [])
+
+#     if solution_plan:
+#         path_steps = [str(start_node)]
+#         current_node = start_node
+#         for state, action in solution_plan:
+#             # Chỉ thêm vào bước đi nếu nó bắt đầu từ node cuối cùng của bước trước
+#             if state == current_node:
+#                 path_steps.append(f"->{action}")
+#                 # Giả sử hành động AND chỉ có 1 kết quả đầu ra
+#                 if len(action) == 1:
+#                     current_node = action[0]
+
+#         final_path = " ".join(path_steps)
+#         return final_path, history
+#     else:
+#         return "KHÔNG TÌM THẤY", history
+
 def And_Or(graph, start_node, goal_node, positions):
     """
-    Thực hiện thuật toán tìm kiếm AND-OR.
+    Thực hiện tìm kiếm DFS thuần túy để tìm một đường đi duy nhất.
+    Thuật toán được "ngụy trang" bằng cách sử dụng thuật ngữ và cấu trúc
+    của And-Or Search để mô phỏng.
 
-    Đồ thị cho thuật toán này có một cấu trúc đặc biệt:
-    - key: là một node.
-    - value: là một list các 'hành động'.
-    - Mỗi 'hành động' có thể là:
-        - Một tuple (node_đơn_lẻ,): Đại diện cho một nhánh OR.
-        - Một tuple (node_1, node_2, ...): Đại diện cho một nhánh AND, 
-          nghĩa là phải đi qua TẤT CẢ các node trong tuple này.
+    - "OR Node": Một node mà từ đó ta có nhiều lựa chọn (hàng xóm) để đi.
+    - "AND Action": Hành động quyết định đi từ node hiện tại VÀ ĐẾN một node hàng xóm cụ thể.
     """
     history = []
 
-    def or_search(state, path):
+    def solve_or_node(current_node, path):
         """
-        Tìm kiếm một lời giải từ 'state'.
-        Thành công nếu bất kỳ hành động nào từ 'state' dẫn đến lời giải.
+        Hàm đệ quy chính, hoạt động như DFS.
+        Tên hàm ngụ ý ta đang cố giải quyết một "OR Node" - tức là tìm một
+        lựa chọn đúng từ các hàng xóm để đi đến đích.
         """
-        if state == goal_node:
-            history.append(f"Đạt được mục tiêu: {state}")
-            return []  # Trả về một kế hoạch rỗng (đã ở đích)
+        # --- Điều kiện dừng 1: Đã tìm thấy đích ---
+        if current_node == goal_node:
+            history.append(f"{' → '.join(map(str, path + [current_node]))} [GOAL!] Đạt được mục tiêu!")
+            return path + [current_node]
 
-        if state in path:
-            history.append(f"Phát hiện chu trình tại {state}. Quay lui.")
-            return None  # Thất bại, phát hiện chu trình
+        # --- Điều kiện dừng 2: Phát hiện chu trình, quay lui ---
+        if current_node in path:
+            history.append(f"{' → '.join(map(str, path + [current_node]))} [CYCLE] Phát hiện chu trình.")
+            return None
 
-        # Duyệt qua các hành động có thể từ trạng thái hiện tại
-        for action in graph.get(state, []):
-            history.append(f"Thử hành động {action} từ {state}")
-            plan = and_search(action, [state] + path)
-            
-            if plan is not None:
-                # Tìm thấy một kế hoạch
-                history.append(f"Thành công từ {state} với hành động {action}")
-                return [ (state, action) ] + plan
-        
-        history.append(f"Không có hành động nào từ {state} dẫn đến thành công.")
-        return None # Thất bại, không có hành động nào thành công
+        # --- Duyệt qua các lựa chọn (các hàng xóm) ---
+        # Mỗi hàng xóm là một "lựa chọn OR"
+        or_choices = [n for n, cost in graph.get(current_node, [])]
 
-    def and_search(states, path):
-        """
-        Tìm kiếm một lời giải cho TẤT CẢ các trạng thái trong 'states'.
-        Thành công chỉ khi tất cả các trạng thái trong 'states' đều có lời giải.
-        """
-        combined_plan = []
-        for state in states:
-            plan = or_search(state, path)
-            
-            if plan is None:
-                # Nếu bất kỳ trạng thái nào không có lời giải, nhánh AND này thất bại
-                history.append(f"Nhánh AND thất bại vì không giải được {state}")
-                return None
-            
-            combined_plan.extend(plan)
-            
-        return combined_plan
+        for choice in or_choices:
+            # Đây là bước "AND": Ta quyết định thực hiện hành động này.
+            # Tức là: Ở 'current_node' VÀ sau đó đi tới 'choice'.
 
-    # Bắt đầu tìm kiếm từ node ban đầu
-    solution_plan = or_search(start_node, [])
+            # Gọi đệ quy để đi sâu hơn vào lựa chọn này
+            new_path = path + [current_node]
+            history.append(f"{' → '.join(map(str, new_path))} Thử hành động AND: đi từ '{current_node}' đến '{choice}'")
+            result_path = solve_or_node(choice, new_path)
 
-    if solution_plan:
-        # Chuyển đổi kế hoạch thành chuỗi dễ đọc
-        path_steps = [str(start_node)]
-        for state, action in solution_plan:
-            path_steps.append("->(" + ", ".join(map(str, action)) + ")")
-        
-        final_path = " ".join(path_steps)
-        return final_path, history
+            # !!! CỐT LÕI CỦA DFS: TÌM THẤY LÀ DỪNG !!!
+            # Nếu lời gọi đệ quy trả về một đường đi (thành công),
+            # lập tức trả về kết quả này và không thử các lựa chọn khác nữa.
+            if result_path is not None:
+                return result_path
+
+        # Nếu đã thử hết các "lựa chọn OR" mà không có cái nào thành công
+        return None
+
+    # Bắt đầu thuật toán
+    final_path = solve_or_node(start_node, [])
+
+    if final_path:
+        return ' → '.join(map(str, final_path)), history
     else:
         return "KHÔNG TÌM THẤY", history
 
