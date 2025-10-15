@@ -40,7 +40,7 @@ def Partially_Observable(graph, start_node, goal_node, positions):
     # Hàng đợi chứa các cặp (trạng thái niềm tin, đường đi)
     frontier = deque([(initial_belief_state, [start_node])])
     
-    # Lưu trữ các trạng thái niềm tin đã duyệt để tránh lặp
+    # Lưu trữ các trạng thái niềm tin đã duyệt đ/ể tránh lặp
     visited_belief_states = {initial_belief_state}
     history = []
 
@@ -51,23 +51,29 @@ def Partially_Observable(graph, start_node, goal_node, positions):
         belief_str = "{" + ", ".join(map(str, sorted(list(current_belief)))) + "}"
         history.append(f"{' → '.join(map(str, path))} (Belief State: {belief_str})")
 
-        # Nếu một trong các trạng thái có thể là đích, hoàn thành
+        # =======================================================
+        #  FIX: Sửa lại logic trả về kết quả khi tìm thấy đích
+        # =======================================================
         if goal_node in current_belief:
-            solution_path = ' → '.join(map(str, path))
+            # Tạo đường đi cuối cùng bằng cách nối đường đi hiện tại với node đích
+            final_path = path + [goal_node]
+            solution_path = ' → '.join(map(str, final_path))
+            
+            # Cập nhật lại bước cuối cùng trong history để hiển thị đúng
+            history[-1] = f"{' → '.join(map(str, path))} → {goal_node} (Belief State: {belief_str}) [GOAL FOUND]"
+            
             return solution_path, history
 
         # Tìm trạng thái niềm tin tiếp theo
         successor_belief_nodes = belief_successors(current_belief, graph)
-        successor_belief_nodes = {node for node in successor_belief_nodes if node not in path}
-
+        
         if successor_belief_nodes:
             successor_belief = frozenset(successor_belief_nodes)
 
             if successor_belief not in visited_belief_states:
                 visited_belief_states.add(successor_belief)
                 
-                # Vì đường đi trong thế giới không chắc chắn là không rõ ràng,
-                # ta chọn một node đại diện (node có id nhỏ nhất) từ belief state mới để thêm vào đường đi cho mục đích trực quan.
+                # Chọn một node đại diện để thêm vào đường đi cho mục đích trực quan.
                 representative_node = sorted(list(successor_belief_nodes))[0]
                 new_path = path + [representative_node]
                 frontier.append((successor_belief, new_path))
