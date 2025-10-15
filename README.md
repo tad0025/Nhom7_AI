@@ -238,4 +238,4 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
     ![AC3](./GIF/AC3.gif)
       * **Đặc trưng:** Thuật toán này không phải là một thuật toán tìm kiếm hoàn chỉnh, mà là một công cụ tiền xử lý hoặc tích hợp vào tìm kiếm. Mục tiêu của nó là thực thi "tính nhất quán cung" (arc consistency). Nó loại bỏ các giá trị trong miền giá trị của một biến nếu không tồn tại giá trị tương ứng ở biến lân cận để thỏa mãn ràng buộc. Trong hàm `AC3Search`, đầu tiên `ac3` được chạy để "élagage" (cắt tỉa) đồ thị, sau đó `BacktrackingSearch` được chạy trên đồ thị đã được rút gọn đó, giúp tăng tốc độ tìm kiếm đáng kể.
 
-## Nhóm em xin cảm ơn Thầy/Cô/Anh/Chị đã xem bài tập môn AI của Nhóm 07
+## Nhóm em xin chân thành cảm ơn Thầy/Cô/Anh/Chị đã xem bài tập môn AI của Nhóm 07
