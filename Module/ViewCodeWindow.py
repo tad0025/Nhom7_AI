@@ -26,8 +26,11 @@ def ViewCode_window(root, algorithm):
     ALGO_MAPS = {
         "DFS": dfs,
         "IDS": ids,
+        "UCS": ucs,
         "A*": ASSearch,
         "Hill Climbing": HC,
+        "Simulated Annealing": SA,
+        "Genetic": Genetic,
         "Belief State Search": belief_Search,
         "BFS": BFS,
         "Greedy": GreedySearch

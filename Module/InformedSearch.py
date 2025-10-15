@@ -89,3 +89,27 @@ def GreedySearch(graph, start_node, goal_node, positions):
                  heappush(pq, (h_child, neighbor)) 
 
     return 'KHÔNG TÌM THẤY', history
+
+def ucs(graph, start_node, goal_node, positions):
+    pq = [(0, start_node, [start_node])]
+    visited = set()
+    history = []
+
+    while pq:
+        cost, node, path = heappop(pq)
+
+        if node in visited:
+            continue
+        
+        visited.add(node)
+        history.append(' → '.join(map(str, path)) + f' (Cost: {cost})')
+
+        if node == goal_node:
+            return ' → '.join(map(str, path)), history
+
+        for neighbor, step_cost in graph.get(node, []):
+            if neighbor not in visited:
+                new_cost = cost + step_cost
+                heappush(pq, (new_cost, neighbor, path + [neighbor]))
+    
+    return 'KHÔNG TÌM THẤY', history

@@ -105,8 +105,11 @@ def RunCode_window(root):
     alo_func = {
         "DFS": dfs,
         "IDS": ids,
+        "UCS": ucs,
         "A*": ASSearch,
         "Hill Climbing": HC,
+        "Simulated Annealing": SA,
+        "Genetic": Genetic,
         "Belief State Search": belief_Search,
         "BFS": BFS,
         "Greedy": GreedySearch
@@ -129,8 +132,9 @@ def RunCode_window(root):
         nonlocal current_step_index
         if step_index < total_steps:
             current_step_index = step_index
-            next_step()
-            new_win.update()
+            update_ui()
+            # next_step()
+            new_win.update_idletasks()
             new_win.after(500, lambda: auto_run_steps(step_index + 1))
     if history: auto_run_steps()
 
