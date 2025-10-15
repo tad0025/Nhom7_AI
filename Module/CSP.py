@@ -77,9 +77,6 @@ def ac3(graph, positions):
     return domains, history
 
 def AC3Search(graph, start_node, goal_node, positions):
-    """
-    Tìm kiếm sử dụng AC-3 để tiền xử lý.
-    """
     # 1. Chạy AC-3 để thu hẹp miền giá trị
     consistent_domains, history = ac3(graph, positions)
     
@@ -101,7 +98,7 @@ def AC3Search(graph, start_node, goal_node, positions):
     # Kết hợp lịch sử của cả hai giai đoạn
     full_history = history + bt_history
     
-    return solution, full_history
+    return solution, bt_history
 
 # =================================================================
 def forwardcheck(domains, curr_node, next_n, path_cost, max_cost = None):
@@ -119,19 +116,20 @@ def forwardcheck(domains, curr_node, next_n, path_cost, max_cost = None):
     return checeked_domains, new_path_cost
 
 def FCSearch(graph, start_node, goal_node, positions):
-    # (Hàm này giữ nguyên như trong file gốc của bạn)
+    
     def backtrack(path_sofar, curr_node, domains, path_cost):
         if curr_node == goal_node:
             return path_sofar[:], path_cost
         
         for next_n in list(domains.get(curr_node,[])):
-            new_domains, new_cost = forwardcheck(domains, curr_node, next_n, path_cost)
-            if new_domains is not None:
-                path_sofar.append(next_n[0])
-                res = backtrack(path_sofar, next_n[0], new_domains, new_cost)
-                if res is not None:
-                    return res
-                path_sofar.pop()
+            if next_n[0] not in path_sofar:
+                new_domains, new_cost = forwardcheck(domains, curr_node, next_n, path_cost)
+                if new_domains is not None:
+                    path_sofar.append(next_n[0])
+                    res = backtrack(path_sofar, next_n[0], new_domains, new_cost)
+                    if res is not None:
+                        return res
+                    path_sofar.pop()
         return None
 
     domains = {n: list(neigh) for n, neigh in graph.items()}
@@ -141,6 +139,6 @@ def FCSearch(graph, start_node, goal_node, positions):
         # Chuyển đổi kết quả để phù hợp với định dạng đầu ra chung
         path_str = ' → '.join(map(str, sol[0]))
         history = [f"Found path with cost {sol[1]}"] # CSP không có history từng bước
-        return path_str, history
+        return path_str, [path_str]
     else:
-        return "KHÔNG TÌM THẤY", ["No solution found."]
+        return "KHÔNG TÌM THẤY", []
