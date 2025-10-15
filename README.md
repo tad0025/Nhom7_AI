@@ -101,12 +101,28 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
 ### 6. Kết Quả Thực Nghiệm
 
-Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng cho mục "Kết quả thực nghiệm", phân tích sâu hơn về từng thuật toán dựa trên mã nguồn bạn đã cung cấp.
+- **Xây dựng giao diện người dùng (GUI) hoàn chỉnh:**
+    - Thiết kế giao diện trực quan, thân thiện với người dùng bằng thư viện **CustomTkinter**, bao gồm ba khu vực chính: lựa chọn thuật toán, màn hình hiển thị đồ thị và lịch sử kết quả.
+    - Giao diện có khả năng tự động căn giữa màn hình để đảm bảo trải nghiệm người dùng tốt nhất.
+    - Tích hợp các thành phần tương tác như ComboBox để chọn thuật toán, TextBox để nhập liệu và các nút bấm chức năng.
 
------
+- **Trực quan hóa đồ thị và thuật toán:**
+    - Xây dựng module vẽ đồ thị tự động, có khả năng co giãn và căn chỉnh theo kích thước cửa sổ.
+    - Mô phỏng đồ thị một cách sinh động: mỗi đỉnh (node) được biểu thị bằng một ngôi nhà và trọng số (weight) hiển thị như một mặt trời; mỗi cạnh (edge) là một con đường với biển báo chi phí (cost).
+    - Khi thuật toán chạy, chương trình có khả năng tô màu và làm nổi bật đường đi được tìm thấy, cũng như các node bắt đầu và kết thúc.
 
-### **6. Kết Quả Thực Nghiệm**
+- **Triển khai thành công đa dạng các nhóm thuật toán:**
+    - **Uninformed Search**: Đã triển khai các thuật toán tìm kiếm cơ bản không sử dụng thông tin heuristic, bao gồm Breadth-First Search (BFS), Depth-First Search (DFS), và Iterative Deepening Search (IDS).
+    - **Informed Search**: Cài đặt các thuật toán tìm kiếm có sử dụng thông tin heuristic để tối ưu hóa đường đi như A* Search, Greedy Best-First Search, và Uniform Cost Search (UCS).
+    - **Local Search**: Xây dựng các thuật toán tìm kiếm cục bộ, hiệu quả cho các bài toán tối ưu hóa, bao gồm Hill Climbing, Simulated Annealing, và Genetic Algorithm.
+    - **Complex Environment Search**: Triển khai các thuật toán cho môi trường phức tạp như AND-OR Search, Belief State Search, và Partially Observable Search.
+    - **Constraint Satisfaction Problems (CSP)**: Cài đặt các thuật toán cho bài toán thỏa mãn ràng buộc, gồm Backtracking, Forward-Checking, và AC-3.
 
+- **Các tính năng nâng cao:**
+    - **Cửa sổ chạy thuật toán riêng biệt (`RunCodeWindow`):** Cung cấp một giao diện tập trung cho việc quan sát quá trình chạy của thuật toán, kèm theo chức năng xem log và di chuyển từng bước (`Bước Trước`/`Bước Kế`) để tiện theo dõi.
+    - **Xem mã nguồn (`ViewCodeWindow`):** Cho phép người dùng xem trực tiếp mã nguồn Python của thuật toán đang được chọn, giúp hiểu rõ hơn về cách thức hoạt động của nó.
+    - **Tùy chỉnh đồ thị:** Người dùng có thể nhấn nút "Random Cost" để tạo ngẫu nhiên chi phí của các cạnh, làm cho việc mô phỏng trở nên đa dạng hơn.
+    - **Lịch sử chạy (`Log History`):** Tự động lưu lại kết quả (đường đi, số bước) của mỗi lần chạy thuật toán vào một khu vực riêng để người dùng có thể dễ dàng so sánh và đánh giá.
 
 #### **1. Uninformed Search (Tìm kiếm không có thông tin)**
 
