@@ -1,6 +1,78 @@
 import collections
 from collections import deque
 
+def And_Or(graph, start_node, goal_node, positions):
+    """
+    Thực hiện thuật toán tìm kiếm AND-OR.
+
+    Đồ thị cho thuật toán này có một cấu trúc đặc biệt:
+    - key: là một node.
+    - value: là một list các 'hành động'.
+    - Mỗi 'hành động' có thể là:
+        - Một tuple (node_đơn_lẻ,): Đại diện cho một nhánh OR.
+        - Một tuple (node_1, node_2, ...): Đại diện cho một nhánh AND, 
+          nghĩa là phải đi qua TẤT CẢ các node trong tuple này.
+    """
+    history = []
+
+    def or_search(state, path):
+        """
+        Tìm kiếm một lời giải từ 'state'.
+        Thành công nếu bất kỳ hành động nào từ 'state' dẫn đến lời giải.
+        """
+        if state == goal_node:
+            history.append(f"Đạt được mục tiêu: {state}")
+            return []  # Trả về một kế hoạch rỗng (đã ở đích)
+
+        if state in path:
+            history.append(f"Phát hiện chu trình tại {state}. Quay lui.")
+            return None  # Thất bại, phát hiện chu trình
+
+        # Duyệt qua các hành động có thể từ trạng thái hiện tại
+        for action in graph.get(state, []):
+            history.append(f"Thử hành động {action} từ {state}")
+            plan = and_search(action, [state] + path)
+            
+            if plan is not None:
+                # Tìm thấy một kế hoạch
+                history.append(f"Thành công từ {state} với hành động {action}")
+                return [ (state, action) ] + plan
+        
+        history.append(f"Không có hành động nào từ {state} dẫn đến thành công.")
+        return None # Thất bại, không có hành động nào thành công
+
+    def and_search(states, path):
+        """
+        Tìm kiếm một lời giải cho TẤT CẢ các trạng thái trong 'states'.
+        Thành công chỉ khi tất cả các trạng thái trong 'states' đều có lời giải.
+        """
+        combined_plan = []
+        for state in states:
+            plan = or_search(state, path)
+            
+            if plan is None:
+                # Nếu bất kỳ trạng thái nào không có lời giải, nhánh AND này thất bại
+                history.append(f"Nhánh AND thất bại vì không giải được {state}")
+                return None
+            
+            combined_plan.extend(plan)
+            
+        return combined_plan
+
+    # Bắt đầu tìm kiếm từ node ban đầu
+    solution_plan = or_search(start_node, [])
+
+    if solution_plan:
+        # Chuyển đổi kế hoạch thành chuỗi dễ đọc
+        path_steps = [str(start_node)]
+        for state, action in solution_plan:
+            path_steps.append("->(" + ", ".join(map(str, action)) + ")")
+        
+        final_path = " ".join(path_steps)
+        return final_path, history
+    else:
+        return "KHÔNG TÌM THẤY", history
+
 def belief_successors(belief, graph):
     new_b = set()
     for state in belief:

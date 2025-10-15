@@ -1,5 +1,3 @@
-import collections
-import itertools
 import math
 import random
 
@@ -70,7 +68,7 @@ def SA(graph, start_node, goal_node, positions):
         
     return 'KHÔNG TÌM THẤY', history
 
-def Genetic(graph, start_node, goal_node, positions, population_size=50, generations=100, mutation_rate=0.1):
+def Genetic(graph, start_node, goal_node, positions, population_size=50, generations=10, mutation_rate=0.1):
     
     def calculate_path_cost(path):
         total_cost = 0
@@ -105,7 +103,8 @@ def Genetic(graph, start_node, goal_node, positions, population_size=50, generat
             population.append(path)
     
     if not population:
-        return 'KHÔNG THỂ TẠO QUẦN THỂ BAN ĐẦU', ["Không thể tạo quần thể ban đầu. Đồ thị có thể không có đường đi."]
+        return 'KHÔNG THỂ TẠO QUẦN THỂ BAN ĐẦU', []
+    # print(population); return
 
     history = []
     best_path_overall = None
@@ -120,9 +119,9 @@ def Genetic(graph, start_node, goal_node, positions, population_size=50, generat
             best_cost_overall = best_cost_in_gen
             best_path_overall = best_path_in_gen
         
-        path_str = ' → '.join(map(str, best_path_overall))
-        history.append(f"{path_str} (Cost: {best_cost_overall})")
-
+        path_str = ' → '.join(map(str, best_path_in_gen))
+        history.append(f"{path_str} (Cost: {best_cost_in_gen})")
+        
         new_population = [path for path, cost in population_with_costs[:population_size // 4]]
 
         while len(new_population) < population_size:

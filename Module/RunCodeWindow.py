@@ -111,6 +111,7 @@ def RunCode_window(root):
         "Hill Climbing": HC,
         "Simulated Annealing": SA,
         "Genetic": Genetic,
+        "And-OR Search": And_Or,
         "Belief State Search": belief_Search,
         "Partially Observable Search": Partially_Observable,
         "BFS": BFS,
