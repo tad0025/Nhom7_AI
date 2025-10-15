@@ -1,7 +1,8 @@
 # README NHÓM 07
 **Nhóm thực hiện:** 07
 
-**Thành viên:** Nguyễn Sư Thành Đạt  **Mã số sinh viên:** 23110131
+**Thành viên:** Nguyễn Sư Thành Đạt
+**Mã số sinh viên:** 23110131
 
 **Thành viên:** Trịnh Đại Nghĩa
 **Mã số sinh viên:** 23110131
@@ -66,7 +67,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
 ### 4. Cách sử dụng
 
-- Chạy ứng dụng có tên file: `23110131_TrinhDaiNghia_BaitapCanhan.py`
+- Chạy ứng dụng có tên file: `Nhom07_Project_AI.py`
 - Chọn thuật toán: có tất cả 5 combobox cho 5 nhóm thuật toán.
   - Chọn 1 thuật toán trong 5 nhóm thuật toán.
   - Khi chọn xong, các combobox còn lại sẽ tự động khóa
