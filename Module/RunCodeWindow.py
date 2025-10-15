@@ -7,6 +7,7 @@ from Module.UninformedSearch import *
 from Module.InformedSearch import *
 from Module.LocalSearch import *
 from Module.ComplexEvniroment import *
+from Module.CSP import *
 
 def add_log(log_textbox, message):
         log_textbox.configure(state="normal")
@@ -111,8 +112,12 @@ def RunCode_window(root):
         "Simulated Annealing": SA,
         "Genetic": Genetic,
         "Belief State Search": belief_Search,
+        "Partially Observable Search": Partially_Observable,
         "BFS": BFS,
-        "Greedy": GreedySearch
+        "Greedy": GreedySearch,
+        "Bactracking": BacktrackingSearch,
+        "Forward-Checking": FCSearch,
+        "AC3": AC3Search
     }
     history = None; current_step_index = -1; total_steps = 0
     try:

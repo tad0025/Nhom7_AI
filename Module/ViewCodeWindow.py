@@ -5,6 +5,7 @@ from Module.UninformedSearch import *
 from Module.InformedSearch import *
 from Module.LocalSearch import *
 from Module.ComplexEvniroment import *
+from Module.CSP import *
 
 def ViewCode_window(root, algorithm):
     # Ẩn window chính
@@ -32,8 +33,12 @@ def ViewCode_window(root, algorithm):
         "Simulated Annealing": SA,
         "Genetic": Genetic,
         "Belief State Search": belief_Search,
+        "Partially Observable Search": Partially_Observable,
         "BFS": BFS,
-        "Greedy": GreedySearch
+        "Greedy": GreedySearch,
+        "Backtracking": BacktrackingSearch,
+        "Forward-Checking": FCSearch,
+        "AC3": AC3Search
     }
 
     # ==== Lấy hàm chính ====
