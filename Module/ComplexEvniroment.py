@@ -1,4 +1,3 @@
-import collections
 from collections import deque
 import heapq
 
@@ -203,7 +202,7 @@ def Partially_Observable(graph, start_node, goal_node, positions):
             return solution_path, history
 
         # Tính toán trạng thái niềm tin kế tiếp: tập hợp tất cả hàng xóm
-        successor_nodes = belief_successors(current_belief, graph)
+        successor_nodes = belief_successors_cost(current_belief, graph)
         if not successor_nodes:
             continue
 
