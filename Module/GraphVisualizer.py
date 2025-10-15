@@ -1,57 +1,70 @@
 import tkinter as tk
 import math
+from Module.GraphData import get_graph_data 
 
 class GraphApp:
-    def __init__(self, root):
+    def __init__(self, root, random=False):
         self.root = root
         self.canvas = tk.Canvas(root, bg='white', highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        self.nodes = {}
-        self.edges = {}
+        # Lấy toàn bộ 4 phần dữ liệu từ GraphData
+        self.adj_list, self.node_weights, self.original_positions, self.original_edges = get_graph_data(random)
+
+        self.nodes_draw_items = {} 
+        self.edges_draw_items = {} 
+        
         self.node_id_counter = 0
         self.edge_id_counter = 0
 
-        # Lưu trữ ID của start node và goal node
         self.start_node_id = None
         self.goal_node_id = None
-
-        self.original_positions = [
-            (150, 150), (350, 150), (550, 150),
-            (250, 350), (450, 350)
-        ]
-        self.original_edges = [(0, 1), (1, 2), (0, 3), (1, 4), (2, 4), (3, 4)]
-
+        
         self.canvas.bind("<Configure>", self.center_and_redraw_graph)
-
+        
     def highlight_nodes(self, start_id=None, goal_id=None):
-        """
-        Lưu lại ID của start và goal node, sau đó vẽ lại đồ thị.
-        """
+        """Dùng cho cửa sổ chính (Middle Pane) để highlight Start/Goal khi nhập"""
         self.start_node_id = start_id
         self.goal_node_id = goal_id
-        # Gọi hàm vẽ lại để cập nhật màu sắc
-        self.center_and_redraw_graph()
+        self.final_path = [] 
+        self.center_and_redraw_graph() 
+        
+    def get_node_color(self, node_id, path):
+        """Xác định màu nền của Node dựa trên trạng thái hiện tại."""
+        if node_id == self.start_node_id:
+            return "#008000"  # Xanh lá (START)
+        if node_id == self.goal_node_id:
+            return "gold"     # Vàng (GOAL)
+        if node_id in path:
+            return "#FF69B4"  # Hot Pink (FINAL PATH)
+        return "white" # Mặc định
 
-    def center_and_redraw_graph(self, event=None):
-        """
-        Xóa canvas, tính toán lại vị trí để căn giữa đồ thị, sau đó vẽ lại tất cả.
-        """
+    def get_edge_color(self, u, v, path):
+        for i in range(1, len(path)):
+            if {u, v} == {path[i-1], path[i]}:
+                return "red"
+        return "gray"
+
+    def update_visualization(self, path):
+        path = path.split(' → '); path[-1] = path[-1].split(' ')[0]
+        path = list(map(int, path))
+        if not path: return
+        self.center_and_redraw_graph(path=path)
+
+    def center_and_redraw_graph(self, event=None, path=[]):
         self.canvas.delete("all")
-        self.nodes = {}
-        self.edges = {}
+        self.nodes_draw_items = {}
+        self.edges_draw_items = {}
         self.node_id_counter = 0
         self.edge_id_counter = 0
 
         canvas_width = self.canvas.winfo_width()
         canvas_height = self.canvas.winfo_height()
 
-        if canvas_width <= 1 or canvas_height <= 1:
+        if canvas_width <= 1 or canvas_height <= 1 or not self.original_positions:
             return
 
-        if not self.original_positions:
-            return
-        
+        # --- Tính toán kích thước gốc của đồ thị ---
         min_x = min(p[0] for p in self.original_positions)
         max_x = max(p[0] for p in self.original_positions)
         min_y = min(p[1] for p in self.original_positions)
@@ -59,52 +72,54 @@ class GraphApp:
 
         graph_width = max_x - min_x
         graph_height = max_y - min_y
-        graph_center_x = min_x + graph_width / 2
-        graph_center_y = min_y + graph_height / 2
 
+        # --- Tính hệ số thu nhỏ để vừa khung canvas ---
+        if graph_width == 0 or graph_height == 0:
+            scale = 1
+        else:
+            margin = 100  # khoảng cách lề
+            scale_x = (canvas_width - margin) / graph_width
+            scale_y = (canvas_height - margin) / graph_height
+            scale = min(scale_x, scale_y, 1.4)  # giới hạn phóng to tối đa
+
+        # --- Tính vị trí trung tâm ---
+        graph_center_x = (min_x + max_x) / 2
+        graph_center_y = (min_y + max_y) / 2
         canvas_center_x = canvas_width / 2
         canvas_center_y = canvas_height / 2
 
-        offset_x = canvas_center_x - graph_center_x
-        offset_y = canvas_center_y - graph_center_y
-
-        # Vẽ các node với vị trí mới và kiểm tra vai trò của từng node
+        # --- Vẽ các node (đã scale + căn giữa) ---
+        scaled_positions = []
         for i, (x, y) in enumerate(self.original_positions):
-            node_role = "normal"
-            if i == self.start_node_id:
-                node_role = "start"
-            elif i == self.goal_node_id:
-                node_role = "goal"
-            
-            self.create_node(x + offset_x, y + offset_y, node_role=node_role)
+            new_x = (x - graph_center_x) * scale + canvas_center_x
+            new_y = (y - graph_center_y) * scale + canvas_center_y
+            scaled_positions.append((new_x, new_y))
+            fill_color = self.get_node_color(i, path)
+            weight = self.node_weights.get(i, 99)
+            self.create_node(new_x, new_y, node_id=i, weight=weight, fill_color=fill_color)
 
-        for n1, n2 in self.original_edges:
-            self.create_edge(n1, n2)
+        # --- Vẽ các cạnh ---
+        for u, v in self.original_edges:
+            cost = next((c for n, c in self.adj_list.get(u, []) if n == v), 55)
+            edge_color = self.get_edge_color(u, v, path)
+            # Dùng vị trí sau khi scale
+            self.create_edge(u, v, cost=cost, edge_color=edge_color)
 
-    def create_node(self, x, y, weight=99, node_role="normal"):
+    def create_node(self, x, y, node_id, weight=99, fill_color="white"): 
         r = 25
+        circle = self.canvas.create_oval(x-r, y-r, x+r, y+r, outline="black", fill=fill_color) 
 
-        # Quyết định màu nền dựa trên vai trò của node
-        fill_color = "white"  # Mặc định
-        if node_role == "start":
-            fill_color = "#008000"  # Màu xanh cho start node
-        elif node_role == "goal":
-            fill_color = "gold"    # Màu vàng cho goal node
-
-        # Vẽ vòng tròn với màu nền đã được quyết định
-        circle = self.canvas.create_oval(x-r, y-r, x+r, y+r, outline="black", fill=fill_color)
-
-        # thân nhà (hình vuông nhỏ bên trong)
+        # thân nhà
         size = 15
         rect = self.canvas.create_rectangle(x-size//2, y-size//2+1, x+size//2, y+size//2+3, fill="lightgray")
 
-        # mái nhà (tam giác)
+        # mái nhà
         roof = self.canvas.create_polygon(
             x-size//2-7, y-1, x+size//2+7, y-1, x, y-size//2-6,
             fill="red"
         )
         
-        # mặt trời (hình tròn nhỏ + trọng số)
+        # mặt trời (trọng số)
         sun_r = 10
         sun_x, sun_y = x+r-sun_r//2, y-r+sun_r//2
         sun_circle = self.canvas.create_oval(
@@ -115,9 +130,9 @@ class GraphApp:
         sun_text = self.canvas.create_text(sun_x, sun_y, text=str(weight))
 
         # id node
-        text_item = self.canvas.create_text(x, y+size//2-2, text=str(self.node_id_counter))
+        text_item = self.canvas.create_text(x, y+size//2-2, text=str(node_id))
 
-        self.nodes[self.node_id_counter] = {
+        self.nodes_draw_items[node_id] = { 
             'x': x, 'y': y, 'r': r,
             'items': [circle, rect, roof, text_item, sun_circle, sun_text]
         }
@@ -145,15 +160,15 @@ class GraphApp:
         t = min(ts)
         return (x1 + t*dx, y1 + t*dy)
 
-    def create_edge(self, node1_id, node2_id, cost=55):
-        n1, n2 = self.nodes[node1_id], self.nodes[node2_id]
+    def create_edge(self, node1_id, node2_id, cost=55, edge_color="gray"): 
+        n1, n2 = self.nodes_draw_items[node1_id], self.nodes_draw_items[node2_id]
         x1, y1, r1 = n1['x'], n1['y'], n1['r']
         x2, y2, r2 = n2['x'], n2['y'], n2['r']
     
         p1 = self.circle_intersection(x1, y1, x2, y2, x1, y1, r1)
         p2 = self.circle_intersection(x2, y2, x1, y1, x2, y2, r2)
     
-        edge_item = self.canvas.create_line(p1[0], p1[1], p2[0], p2[1], width=6, fill="gray")
+        edge_item = self.canvas.create_line(p1[0], p1[1], p2[0], p2[1], width=6, fill=edge_color) 
     
         mid_x = (p1[0] + p2[0]) / 2
         mid_y = (p1[1] + p2[1]) / 2
@@ -177,7 +192,8 @@ class GraphApp:
         self.canvas.tag_raise(pole_item, edge_item)
         self.canvas.tag_raise(text_item)
     
-        self.edges[self.edge_id_counter] = {
+        edge_key = tuple(sorted((node1_id, node2_id))) 
+        self.edges_draw_items[edge_key] = { 
             'n1': node1_id, 'n2': node2_id, 'item': edge_item,
             'sign': sign_item, 'cost': cost
         }

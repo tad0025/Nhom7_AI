@@ -29,14 +29,13 @@ def main():
     root.grid_columnconfigure(2, weight=1, minsize=300)
 
     # ====== TẠO CÁC KHUNG CHÍNH ======
-    selected_algorithm_var = ctk.StringVar(value="TÊN THUẬT TOÁN")
-    create_left_pane(root, root, selected_algorithm_var)
-    create_middle_pane(root, root, selected_algorithm_var)
-    create_right_pane(root, root)
+    root.algorithm_var = ctk.StringVar(value="TÊN THUẬT TOÁN")
+    create_left_pane(root)
+    create_middle_pane(root)
+    create_right_pane(root)
 
     # ====== CĂN GIỮA CỬA SỔ ======
     center_window(root)
-
     root.mainloop()
 
 if __name__ == "__main__":

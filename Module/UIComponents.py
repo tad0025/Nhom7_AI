@@ -1,11 +1,12 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from Module.GraphVisualizer import GraphApp
+from Module.GraphData import get_graph_data
 from Module.RunCodeWindow import RunCode_window
 from Module.ViewCodeWindow import ViewCode_window
 
-def create_left_pane(root, parent, algorithm_var):
-    frame = ctk.CTkFrame(parent, corner_radius=15)
+def create_left_pane(root):
+    frame = ctk.CTkFrame(root, corner_radius=15)
     frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
 
     frame.configure(fg_color="white")
@@ -17,12 +18,13 @@ def create_left_pane(root, parent, algorithm_var):
         "Uninformed": "Uninformed Search Algorithm",
         "Informed": "Informed Search Algorithm",
         "Local": "Local Search Algorithm",
-        "Decomposition": "Problem Decomposition Search"
+        "Complex Enviroment": "Complex Enviroment Search",
+        "CSP": "Constraint Satisfaction Problems",
     }
 
     combo1 = ctk.CTkComboBox(
         frame,
-        values = ["BFS", "DFS", "DLS", "IDS"],
+        values = ["BFS", "DFS", "IDS"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -46,7 +48,7 @@ def create_left_pane(root, parent, algorithm_var):
 
     combo3 = ctk.CTkComboBox(
         frame,
-        values = ["Hill Climbing", "Simulated Annealing", "Beam Search", "Genetic"],
+        values = ["Hill Climbing", "Simulated Annealing", "Genetic"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -58,7 +60,7 @@ def create_left_pane(root, parent, algorithm_var):
 
     combo4 = ctk.CTkComboBox(
         frame,
-        values = ["And-OR Search"],
+        values = ["And-OR Search", "Partially Observable Search", "Belief State Search"],
         width=250,  # chiều rộng
         height=30,  # chiều cao
         font=("Segoe UI", 14),  # font chữ
@@ -66,17 +68,30 @@ def create_left_pane(root, parent, algorithm_var):
         state="readonly"
     )
     combo4.pack(pady=5, padx=10)
-    combo4.set(default_texts["Decomposition"])
+    combo4.set(default_texts["Complex Enviroment"])
+
+    combo5 = ctk.CTkComboBox(
+        frame,
+        values = ["Bactracking", "Forward-Checking", "AC3"],
+        width=250,
+        height=30,
+        font=("Segoe UI", 14),
+        dropdown_font=("Segoe UI", 13),
+        state="readonly"
+    )
+    combo5.pack(pady= 5, padx = 10)
+    combo5.set(default_texts["CSP"])
 
     # Định nghĩa hàm xử lý sự kiện
-    all_combos = [combo1, combo2, combo3, combo4]
+    all_combos = [combo1, combo2, combo3, combo4,combo5]
     def handle_selection(selected_combo):
-        algorithm_var.set(selected_combo.get())
+        root.algorithm_var.set(selected_combo.get())
         defaults = [
             default_texts["Uninformed"],
             default_texts["Informed"],
             default_texts["Local"],
-            default_texts["Decomposition"]
+            default_texts["Complex Enviroment"],
+            default_texts["CSP"]
         ]
         for i, combo in enumerate(all_combos):
             # if combo != selected_combo:
@@ -87,13 +102,14 @@ def create_left_pane(root, parent, algorithm_var):
     combo2.configure(command=lambda choice: handle_selection(combo2))
     combo3.configure(command=lambda choice: handle_selection(combo3))
     combo4.configure(command=lambda choice: handle_selection(combo4))
+    combo5.configure(command=lambda choice: handle_selection(combo5))
 
-def create_middle_pane(root, parent, algorithm_var):
-    frame = ctk.CTkFrame(parent, corner_radius=15)
+def create_middle_pane(root):
+    frame = ctk.CTkFrame(root, corner_radius=15)
     frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
     frame.configure(fg_color="white")
 
-    label_name = ctk.CTkLabel(frame, textvariable=algorithm_var, font=("Segoe UI", 20, "bold"))
+    label_name = ctk.CTkLabel(frame, textvariable=root.algorithm_var, font=("Segoe UI", 20, "bold"))
     label_name.pack(pady=10)
 
     label_name.configure(text_color="black")
@@ -103,12 +119,12 @@ def create_middle_pane(root, parent, algorithm_var):
     input_frame.pack(pady=10, padx=10, fill="x")
 
     ctk.CTkLabel(input_frame, text="Start Node:", font=("Segoe UI", 18)).grid(row=0, column=0, padx=5, pady=5, sticky="w")
-    TxtboxStartNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
-    TxtboxStartNode.grid(row=0, column=1, padx=5, pady=5)
+    root.TxtboxStartNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
+    root.TxtboxStartNode.grid(row=0, column=1, padx=5, pady=5)
 
     ctk.CTkLabel(input_frame, text="Goal Node:", font=("Segoe UI", 18)).grid(row=1, column=0, padx=5, pady=5, sticky="w")
-    TxtboxGoalNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
-    TxtboxGoalNode.grid(row=1, column=1, padx=5, pady=5)
+    root.TxtboxGoalNode = ctk.CTkEntry(input_frame, width=150, font=("Segoe UI", 13))
+    root.TxtboxGoalNode.grid(row=1, column=1, padx=5, pady=5)
     
     # Graph Preview
     graph_frame = ctk.CTkFrame(frame, height=400, corner_radius=10, fg_color="#DDDDDD")
@@ -118,14 +134,14 @@ def create_middle_pane(root, parent, algorithm_var):
     def update_node_colors(event=None):
         start_id, goal_id = None, None
         try:
-            start_val = TxtboxStartNode.get()
+            start_val = root.TxtboxStartNode.get()
             if start_val:
                 start_id = int(start_val)
         except ValueError:
             start_id = None  # Bỏ qua nếu nhập không phải là số
 
         try:
-            goal_val = TxtboxGoalNode.get()
+            goal_val = root.TxtboxGoalNode.get()
             if goal_val:
                 goal_id = int(goal_val)
         except ValueError:
@@ -133,38 +149,54 @@ def create_middle_pane(root, parent, algorithm_var):
             
         graph.highlight_nodes(start_id=start_id, goal_id=goal_id)
 
-    TxtboxStartNode.bind("<KeyRelease>", update_node_colors)
-    TxtboxGoalNode.bind("<KeyRelease>", update_node_colors)
+    root.TxtboxStartNode.bind("<KeyRelease>", update_node_colors)
+    root.TxtboxGoalNode.bind("<KeyRelease>", update_node_colors)
 
     def ClearBox():
-        TxtboxStartNode.delete(0, "end")
-        TxtboxGoalNode.delete(0, "end")
+        root.TxtboxStartNode.delete(0, "end")
+        root.TxtboxGoalNode.delete(0, "end")
+        update_node_colors()
+        
+    def RandomCost():
+        nonlocal graph
+        if graph and hasattr(graph, "canvas") and graph.canvas.winfo_exists():
+            graph.canvas.delete("all")  # Xóa toàn bộ nội dung cũ
+            graph.canvas.destroy()      # Hủy canvas cũ
+        graph = GraphApp(graph_frame, True)
         update_node_colors()
 
     btnCLear = ctk.CTkButton(input_frame, text="Clear", font=("Segoe UI", 14), command=ClearBox).grid(row=1, column=2, padx=5, pady=5, sticky="w")
+    btnRandomCost = ctk.CTkButton(input_frame, text="Random Cost", font=("Segoe UI", 14),command=RandomCost).grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
     # Buttons
     btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
     btn_frame.pack(pady=10)
 
     def get_selected_algorithm():
-        if algorithm_var.get() in ["TÊN THUẬT TOÁN", "Uninformed Search Algorithm", "Informed Search Algorithm", "Local Search Algorithm", "Problem Decomposition Search"]:
+        if root.algorithm_var.get() in ["TÊN THUẬT TOÁN", "Uninformed Search Algorithm", "Informed Search Algorithm", "Local Search Algorithm", "Complex Enviroment Search", "Constraint Satisfaction Problems"]:
             return "Chưa chọn thuật toán"
-        return algorithm_var.get()
+        return root.algorithm_var.get()
     
     def run_algorithm(root):
-        algo = get_selected_algorithm()
-        if algo == "Chưa chọn thuật toán":
+        nodes, node_weights, positions, edges = get_graph_data()
+        root.algorithm = get_selected_algorithm()
+        if root.algorithm == "Chưa chọn thuật toán":
             messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi chạy!")
-        else:
-            RunCode_window(root, algo)
+            return
+        elif not root.TxtboxStartNode.get().isdigit() or not root.TxtboxGoalNode.get().isdigit():
+            messagebox.showwarning("Cảnh báo", "Hãy nhập đúng định dạng Node (số nguyên)!")
+            return
+        elif int(root.TxtboxStartNode.get()) not in node_weights or int(root.TxtboxGoalNode.get()) not in node_weights:
+            messagebox.showwarning("Cảnh báo", f"Node bắt đầu hoặc Node kết thúc không tồn tại trong đồ thị! (0 đến {len(node_weights)-1})")
+            return
+        RunCode_window(root)
 
     def view_code(root):
-        algo = get_selected_algorithm()
-        if algo == "Chưa chọn thuật toán":
+        root.algorithm = get_selected_algorithm()
+        if root.algorithm == "Chưa chọn thuật toán":
             messagebox.showwarning("Cảnh báo", "Hãy chọn thuật toán trước khi xem code!")
-        else:
-            ViewCode_window(root, algo)
+            return
+        ViewCode_window(root, root.algorithm)
 
     btnRun = ctk.CTkButton(btn_frame, text="Run Algorithm", width=160, fg_color="#4A90E2", hover_color="#357ABD", command=lambda: run_algorithm(root))
     btnRun.pack(side="left", padx=10)
@@ -172,18 +204,17 @@ def create_middle_pane(root, parent, algorithm_var):
     btnViewCode = ctk.CTkButton(btn_frame, text="View Code", width=160, fg_color="#50C878", hover_color="#3FA463", command=lambda: view_code(root))
     btnViewCode.pack(side="left", padx=10)
 
-def create_right_pane(root, parent):
-    frame = ctk.CTkFrame(parent, corner_radius=15)
+def create_right_pane(root):
+    frame = ctk.CTkFrame(root, corner_radius=15)
     frame.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
     frame.configure(fg_color="white")
 
     LblLogHistory = ctk.CTkLabel(frame, text="LOG HISTORY", font=("Segoe UI", 20, "bold"))
     LblLogHistory.pack(pady=10)
 
-    txtboxtHistory = ctk.CTkTextbox(frame, width=250, height=500, font=("Consolas", 12),fg_color="#DDDDDD")
-    txtboxtHistory.pack(padx=10, pady=10, fill="both", expand=True)
-    txtboxtHistory.insert("0.0", "Kết quả thuật toán...\nNode path: A → B → C")
-    txtboxtHistory.configure(state="disabled")
+    root.txtboxtHistory = ctk.CTkTextbox(frame, width=250, height=500, font=("Consolas", 12),fg_color="#DDDDDD")
+    root.txtboxtHistory.pack(padx=10, pady=10, fill="both", expand=True)
+    root.txtboxtHistory.configure(state="disabled")
 
     btnCloseApp = ctk.CTkButton(frame, text="Close App", width=160, fg_color="#FF6347", hover_color="#E05A44", command=root.quit)
-    btnCloseApp.pack( padx=10)
+    btnCloseApp.pack(padx=10, pady=10)
