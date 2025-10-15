@@ -1,5 +1,6 @@
 import collections
 from collections import deque
+import heapq
 
 # def And_Or(graph, start_node, goal_node, positions):
 #     """
@@ -130,37 +131,43 @@ def And_Or(graph, start_node, goal_node, positions):
     else:
         return "KHÔNG TÌM THẤY", history
 
-def belief_successors(belief, graph):
-    new_b = set()
+def belief_successors_cost(belief, graph):
+    """Trả về danh sách (neighbor_state, cost) của tất cả state trong belief, loại trừ state đã có"""
+    successors = []
     for state in belief:
-        neighbors = [n for n, cost in graph.get(state,[]) if n not in belief]
-        for n in neighbors:
-            new_b.add(n)
-    return new_b
+        for neighbor, cost in graph.get(state, []):
+            if neighbor not in belief:
+                successors.append((neighbor, cost))
+    return successors
 
 def belief_Search(graph, start_node, goal_node, positions):
-    start = frozenset([start_node])
-    frontier = deque([(start, [start_node])])
-    v = set(); history = []
+    start_belief = frozenset([start_node])
+    # frontier là heap: (total_cost, current_belief, path_sofar)
+    frontier = [(0, start_belief, [start_node])]  # list dùng heapq
+
+    visited = set()
+    history = []
 
     while frontier:
-        curr_b , path_sofar = frontier.popleft()
-        if curr_b in v:
+        total_cost, curr_belief, path_sofar = heapq.heappop(frontier)
+        if curr_belief in visited:
             continue
-        v.add(curr_b)
+        visited.add(curr_belief)
 
-        log_line = f"{' → '.join(map(str, path_sofar))} Belief: {set(curr_b)}"
+        # Lưu log
+        log_line = f"{' → '.join(map(str, path_sofar))} | Belief: {sorted(curr_belief)} | Cost: {total_cost}"
         history.append(log_line)
 
-        if goal_node in curr_b:
-            return f"Goal found in belief {set(curr_b)} via path: {' → '.join(map(str, path_sofar))}", history
+        # Goal check
+        if goal_node in curr_belief:
+            return history[-1], history
 
-        succ_b_node = belief_successors(curr_b, graph)
-        if succ_b_node:
-            succ_b = frozenset(succ_b_node)
-            if succ_b not in v: 
-                frontier.append((succ_b, path_sofar + [set(succ_b)]))
-                
+        # Tìm successors
+        for neighbor, step_cost in belief_successors_cost(curr_belief, graph):
+            new_belief = frozenset(set(curr_belief) | {neighbor})
+            if new_belief not in visited:
+                heapq.heappush(frontier, (total_cost + step_cost, new_belief, path_sofar + [neighbor]))
+
     return "KHÔNG TÌM THẤY", history
 
 def Partially_Observable(graph, start_node, goal_node, positions):
