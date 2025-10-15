@@ -121,6 +121,7 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **Depth-First Search (DFS)**
 
+    ![DFS](./GIF/DFS.gif)
       * **Đặc trưng:** Ưu tiên đi sâu nhất có thể theo một nhánh trước khi quay lui (backtrack). Thuật toán này sử dụng một ngăn xếp (stack) để quản lý các node. Trong file `UninformedSearch.py`, hàm `dfs` triển khai logic này bằng cách dùng một list làm stack và thêm các hàng xóm vào stack theo thứ tự đảo ngược để ưu tiên duyệt nhánh đầu tiên.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh:** Không. DFS có thể bị kẹt trong một nhánh có độ sâu vô hạn và không bao giờ tìm ra lời giải.
@@ -129,6 +130,7 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **Iterative Deepening Search (IDS)**
 
+    ![IDS](./GIF/IDS.gif)
       * **Đặc trưng:** Là sự kết hợp thông minh giữa BFS và DFS. IDS thực hiện một loạt các cuộc gọi DFS với giới hạn độ sâu tăng dần (depth-limited search). Nó bắt đầu với độ sâu 0, sau đó 1, 2, và cứ thế cho đến khi tìm thấy lời giải. Điều này giúp nó có được ưu điểm của cả hai thuật toán.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có, giống như BFS.
@@ -136,12 +138,11 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
 -----
 
-#### **2. Informed Search (Tìm kiếm có thông tin)** heuristics.
-
-Sử dụng hàm heuristic `h(n)` để ước tính chi phí từ một node `n` đến đích. Trong dự án này, hàm `heuristic` được định nghĩa trong `InformedSearch.py` là khoảng cách Euclid, giúp thuật toán "thông minh" hơn trong việc lựa chọn đường đi.
+#### **2. Informed Search (Tìm kiếm có thông tin)**
 
   * **Greedy Best-First Search**
 
+    ![Greedy](./GIF/Greedy.gif)
       * **Đặc trưng:** Là một thuật toán "tham lam". Tại mỗi bước, nó luôn chọn đi đến node có giá trị heuristic `h(n)` nhỏ nhất, tức là node được cho là gần đích nhất mà không quan tâm đến chi phí đã đi. Nó sử dụng hàng đợi ưu tiên (priority queue) để quản lý các node dựa trên giá trị `h(n)`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Không. Sự "tham lam" có thể dẫn nó vào ngõ cụt hoặc chọn một con đường dài hơn về tổng chi phí.
