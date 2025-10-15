@@ -112,7 +112,7 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **Breadth-First Search (BFS)**
 
-![BFS](./GIF/BFS.gif)
+    ![BFS](./GIF/BFS.gif)
       * **Đặc trưng:** Thuật toán duyệt đồ thị theo từng tầng (level-by-level). Nó sử dụng một hàng đợi (queue) để quản lý các node sẽ được duyệt tiếp theo. Trong code, hàm `BFS` sử dụng `collections.deque` làm hàng đợi và một tập `visited` để tránh duyệt lại các node đã đi qua, đảm bảo mỗi node chỉ được khám phá một lần.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh:** Có. BFS luôn đảm bảo tìm ra lời giải nếu nó tồn tại.
