@@ -168,7 +168,7 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **Hill Climbing**
 
-    ![Hill](./GIF/Hill.gif)
+    ![HC](./GIF/HC.gif)
       * **Đặc trưng:** Là một vòng lặp đơn giản, liên tục di chuyển theo hướng "dốc lên" (tức là đến node lân cận có giá trị heuristic tốt hơn). Nó sẽ dừng lại khi đến một "đỉnh" mà không có lân cận nào tốt hơn. Trong code, vòng lặp `while True` sẽ tìm `next` node là `min` của các hàng xóm dựa trên `heuristic` và sẽ `break` nếu `heuristic` của `next` không tốt hơn `cur`.
       * **Phân tích và đánh giá:**
           * **Nhược điểm:** Rất dễ bị kẹt ở "cực đại địa phương" (local maxima), "bình nguyên" (plateau) hoặc "sườn núi" (ridge), dẫn đến không tìm được lời giải tối ưu toàn cục.
@@ -176,7 +176,7 @@ Chắc chắn rồi\! Dưới đây là phiên bản chi tiết và mở rộng 
 
   * **Simulated Annealing (Luyện kim mô phỏng)**
 
-    ![Simulated](./GIF/Simulated.gif)
+    ![SA](./GIF/SA.gif)
       * **Đặc trưng:** Là một cải tiến của Hill Climbing. Nó cho phép thực hiện các bước đi "xấu hơn" (xuống dốc) với một xác suất nhất định, giúp thoát khỏi các cực đại địa phương. Xác suất này được kiểm soát bởi một tham số "nhiệt độ" (`T`), `T` sẽ giảm dần theo thời gian. Khi `T` cao, thuật toán khám phá rất ngẫu nhiên; khi `T` thấp, nó hoạt động giống Hill Climbing.
       * **Phân tích và đánh giá:**
           * **Ưu điểm:** Có khả năng tìm được lời giải tối ưu toàn cục cao hơn nhiều so với Hill Climbing nếu lịch trình "làm nguội" (cooling schedule) được chọn phù hợp.
