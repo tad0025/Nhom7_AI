@@ -124,7 +124,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Breadth-First Search (BFS)**
 
-    ![BFS](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/BFS.gif?raw=true)
+    ![BFS](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/BFS.gif?raw=true)
       * **Đặc trưng:** Thuật toán duyệt đồ thị theo từng tầng (level-by-level). Nó sử dụng một hàng đợi (queue) để quản lý các node sẽ được duyệt tiếp theo. Trong code, hàm `BFS` sử dụng `collections.deque` làm hàng đợi và một tập `visited` để tránh duyệt lại các node đã đi qua, đảm bảo mỗi node chỉ được khám phá một lần.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh:** Có. BFS luôn đảm bảo tìm ra lời giải nếu nó tồn tại.
@@ -133,7 +133,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Depth-First Search (DFS)**
 
-    ![DFS](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/DFS.gif?raw=true)
+    ![DFS](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/DFS.gif?raw=true)
       * **Đặc trưng:** Ưu tiên đi sâu nhất có thể theo một nhánh trước khi quay lui (backtrack). Thuật toán này sử dụng một ngăn xếp (stack) để quản lý các node. Trong file `UninformedSearch.py`, hàm `dfs` triển khai logic này bằng cách dùng một list làm stack và thêm các hàng xóm vào stack theo thứ tự đảo ngược để ưu tiên duyệt nhánh đầu tiên.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh:** Không. DFS có thể bị kẹt trong một nhánh có độ sâu vô hạn và không bao giờ tìm ra lời giải.
@@ -142,7 +142,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Iterative Deepening Search (IDS)**
 
-    ![IDS](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/IDS.gif?raw=true)
+    ![IDS](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/IDS.gif?raw=true)
       * **Đặc trưng:** Là sự kết hợp thông minh giữa BFS và DFS. IDS thực hiện một loạt các cuộc gọi DFS với giới hạn độ sâu tăng dần (depth-limited search). Nó bắt đầu với độ sâu 0, sau đó 1, 2, và cứ thế cho đến khi tìm thấy lời giải. Điều này giúp nó có được ưu điểm của cả hai thuật toán.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có, giống như BFS.
@@ -154,7 +154,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Greedy Best-First Search**
 
-    ![Greedy](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Greedy.gif?raw=true)
+    ![Greedy](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Greedy.gif?raw=true)
       * **Đặc trưng:** Là một thuật toán "tham lam". Tại mỗi bước, nó luôn chọn đi đến node có giá trị heuristic `h(n)` nhỏ nhất, tức là node được cho là gần đích nhất mà không quan tâm đến chi phí đã đi. Nó sử dụng hàng đợi ưu tiên (priority queue) để quản lý các node dựa trên giá trị `h(n)`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Không. Sự "tham lam" có thể dẫn nó vào ngõ cụt hoặc chọn một con đường dài hơn về tổng chi phí.
@@ -162,14 +162,14 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **A\* Search**
 
-    ![AStar](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/AStar.gif?raw=true)
+    ![AStar](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/AStar.gif?raw=true)
       * **Đặc trưng:** Là thuật toán tìm kiếm nổi tiếng nhất. Nó cân bằng giữa chi phí thực tế đã đi `g(n)` và chi phí ước tính đến đích `h(n)`. Node được ưu tiên mở rộng là node có tổng `f(n) = g(n) + h(n)` nhỏ nhất. Việc triển khai sử dụng hàng đợi ưu tiên để lưu trữ các tuple `(f_score, g_score, node)`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có, với điều kiện hàm heuristic là "chấp nhận được" (admissible), tức là không bao giờ đánh giá cao hơn chi phí thực tế. Khoảng cách Euclid là một heuristic chấp nhận được. A\* được xem là thuật toán tối ưu nhất trong số các thuật toán tìm kiếm có thông tin.
 
   * **Uniform Cost Search (UCS)**
 
-    ![UCS](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/UCS.gif?raw=true)
+    ![UCS](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/UCS.gif?raw=true)
       * **Đặc trưng:** Có thể xem là một trường hợp đặc biệt của A\* với `h(n) = 0`. Nó luôn mở rộng node có tổng chi phí đường đi `g(n)` thấp nhất tính từ điểm xuất phát. Về bản chất, nó chính là thuật toán Dijkstra. Code triển khai sử dụng hàng đợi ưu tiên để sắp xếp các node theo `cost`.
       * **Phân tích và đánh giá:**
           * **Tính hoàn chỉnh và tối ưu:** Có. Nó luôn đảm bảo tìm được đường đi với tổng chi phí thấp nhất. Tuy nhiên, nó duyệt không có định hướng và có thể mở rộng nhiều node không cần thiết so với A\*.
@@ -180,7 +180,7 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Hill Climbing**
 
-    ![HC](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/HC.gif?raw=true)
+    ![HC](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/HC.gif?raw=true)
       * **Đặc trưng:** Là một vòng lặp đơn giản, liên tục di chuyển theo hướng "dốc lên" (tức là đến node lân cận có giá trị heuristic tốt hơn). Nó sẽ dừng lại khi đến một "đỉnh" mà không có lân cận nào tốt hơn. Trong code, vòng lặp `while True` sẽ tìm `next` node là `min` của các hàng xóm dựa trên `heuristic` và sẽ `break` nếu `heuristic` của `next` không tốt hơn `cur`.
       * **Phân tích và đánh giá:**
           * **Nhược điểm:** Rất dễ bị kẹt ở "cực đại địa phương" (local maxima), "bình nguyên" (plateau) hoặc "sườn núi" (ridge), dẫn đến không tìm được lời giải tối ưu toàn cục.
@@ -188,14 +188,14 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Simulated Annealing (Luyện kim mô phỏng)**
 
-    ![SA](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/SA.gif?raw=true)
+    ![SA](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/SA.gif?raw=true)
       * **Đặc trưng:** Là một cải tiến của Hill Climbing. Nó cho phép thực hiện các bước đi "xấu hơn" (xuống dốc) với một xác suất nhất định, giúp thoát khỏi các cực đại địa phương. Xác suất này được kiểm soát bởi một tham số "nhiệt độ" (`T`), `T` sẽ giảm dần theo thời gian. Khi `T` cao, thuật toán khám phá rất ngẫu nhiên; khi `T` thấp, nó hoạt động giống Hill Climbing.
       * **Phân tích và đánh giá:**
           * **Ưu điểm:** Có khả năng tìm được lời giải tối ưu toàn cục cao hơn nhiều so với Hill Climbing nếu lịch trình "làm nguội" (cooling schedule) được chọn phù hợp.
 
   * **Genetic Algorithm (Thuật toán di truyền)**
 
-    ![Genetic](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Genetic.gif?raw=true)
+    ![Genetic](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Genetic.gif?raw=true)
       * **Đặc trưng:** Mô phỏng quá trình tiến hóa của sinh vật. Nó duy trì một "quần thể" (population) các giải pháp (các đường đi). Qua mỗi "thế hệ" (generation), các giải pháp tốt nhất được chọn lọc, "lai ghép" (crossover) và "đột biến" (mutation) để tạo ra thế hệ mới có khả năng tốt hơn.
       * **Phân tích và đánh giá:**
           * **Ưu điểm:** Rất mạnh mẽ trong việc khám phá song song nhiều khu vực của không gian tìm kiếm, hiệu quả cho các bài toán tối ưu hóa phức tạp.
@@ -206,17 +206,17 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **And-OR Search**
 
-    ![And_Or](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/And_Or.gif?raw=true)
+    ![And_Or](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/And_Or.gif?raw=true)
       * **Đặc trưng:** Được sử dụng cho các bài toán mà lời giải có thể được phân rã thành các bài toán con. Trong bản triển khai này, nó được "ngụy trang" thành một thuật toán DFS, trong đó việc chọn một nhánh để đi được xem là giải quyết một "OR-node" (chọn một trong nhiều cách), và việc đi từ node hiện tại đến node tiếp theo là một "AND-action" (phải thực hiện hành động này).
 
   * **Belief State Search**
 
-    ![Belief](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Belief.gif?raw=true)
+    ![Belief](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Belief.gif?raw=true)
       * **Đặc trưng:** Áp dụng cho môi trường mà agent không chắc chắn 100% về vị trí hiện tại của mình. Nó tìm kiếm trong không gian của các "trạng thái niềm tin" (belief states), trong đó mỗi belief state là một tập hợp các node mà agent tin rằng mình có thể đang ở đó. Thuật toán sẽ mở rộng belief state bằng cách thêm vào các hàng xóm của tất cả các node trong belief state hiện tại.
 
   * **Partially Observable Search**
 
-    ![Partially_Observable](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Partially_Observable.gif?raw=true)
+    ![Partially_Observable](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Partially_Observable.gif?raw=true)
       * **Đặc trưng:** Về cơ bản, đây là một cách tiếp cận khác cho bài toán tìm kiếm với belief state. Trong code, thuật toán này cũng duy trì một belief state và mở rộng nó. Mục tiêu là tìm một chuỗi hành động để dẫn đến một belief state có chứa node đích.
 
 -----
@@ -225,17 +225,17 @@ Giao diện ViewCodeWindow (Window phụ dùng để xem các hàm thuật toán
 
   * **Backtracking Search**
 
-    ![Backtrack](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Backtrack.gif?raw=true)
+    ![Backtrack](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Backtrack.gif?raw=true)
       * **Đặc trưng:** Là một thuật toán DFS cơ bản cho CSP. Nó thử gán giá trị cho từng biến. Nếu việc gán giá trị vi phạm ràng buộc, nó sẽ "quay lui" (backtrack) và thử giá trị khác. Ràng buộc chính trong hàm `backtrack` là `if neighbor not in path`, ngăn thuật toán đi vào một node đã có trong đường đi hiện tại.
 
   * **Forward-Checking**
 
-    ![Forward](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/Forward.gif?raw=true)
+    ![Forward](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/Forward.gif?raw=true)
       * **Đặc trưng:** Là một phiên bản thông minh hơn của Backtracking. Mỗi khi một node được chọn (`next_n`), hàm `forwardcheck` sẽ tạo ra một `new_domains` (miền giá trị mới) cho các node còn lại bằng cách loại bỏ `next_n` khỏi danh sách hàng xóm của chúng. Điều này giúp phát hiện ra các nhánh tìm kiếm vô nghiệm sớm hơn nhiều.
 
   * **AC-3**
 
-    ![AC3](https://github.com/tad0025/23110089_Nguyen-Su-Thanh-Dat_BTCN_AI/blob/main/GIF/AC3.gif?raw=true)
+    ![AC3](https://github.com/tad0025/Nhom7_AI/blob/main/GIF/AC3.gif?raw=true)
       * **Đặc trưng:** Thuật toán này không phải là một thuật toán tìm kiếm hoàn chỉnh, mà là một công cụ tiền xử lý hoặc tích hợp vào tìm kiếm. Mục tiêu của nó là thực thi "tính nhất quán cung" (arc consistency). Nó loại bỏ các giá trị trong miền giá trị của một biến nếu không tồn tại giá trị tương ứng ở biến lân cận để thỏa mãn ràng buộc. Trong hàm `AC3Search`, đầu tiên `ac3` được chạy để "élagage" (cắt tỉa) đồ thị, sau đó `BacktrackingSearch` được chạy trên đồ thị đã được rút gọn đó, giúp tăng tốc độ tìm kiếm đáng kể.
 
 ## Nhóm em xin chân thành cảm ơn Thầy/Cô/Anh/Chị đã xem bài tập môn AI của Nhóm 07
